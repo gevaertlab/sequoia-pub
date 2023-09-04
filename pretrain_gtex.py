@@ -23,7 +23,7 @@ def custom_collate_fn(batch):
         batch['image'] = []
     return torch.utils.data.dataloader.default_collate(batch)
 
-def filter_no_features(df, feature_path = "/oak/stanford/groups/ogevaert/data/Gen-Pred/features"):
+def filter_no_features(df, feature_path = "examples/features"):
     no_features = []
     for i, row in df.iterrows():
         row = row.to_dict()
@@ -37,12 +37,11 @@ def filter_no_features(df, feature_path = "/oak/stanford/groups/ogevaert/data/Ge
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
-    parser.add_argument('--save_dir', type=str, help='save directory')
-    parser.add_argument('--path_csv', type=str, help='path to ref_file with gene expression data')
-    parser.add_argument('--feature_path', type=str, default="/oak/stanford/groups/ogevaert/data/Gen-Pred/features/", help='path to resnet and clustered features')
-    parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name')
+    parser.add_argument('--save_dir', type=str, default="/examples/pretrained_model",  help='save directory')
+    parser.add_argument('--path_csv', type=str, default="/examples/ref_file.csv", help='path to reference file with gene expression data')
+    parser.add_argument('--feature_path', type=str, default="/examples/features", help='path to resnet and clustered features')
+    parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name used to create saved model name')
     parser.add_argument('--log', type=int, default=0, help='whether to log the loss')
-
     parser.add_argument('--model', type=str, default='vit', help='model to pretrain, "vit" or "he2rna"')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--num_epochs', type=int, default=200, help='number of epochs to train')
@@ -68,7 +67,7 @@ if __name__ == '__main__':
     
     run = None
     if args.log:
-        run = wandb.init(project="visgene", entity='mpizuric', config=args, name=args.exp_name) 
+        run = wandb.init(project="visgene", entity='account_name', config=args, name=args.exp_name) 
 
     ############################################## prepare data ##############################################        
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")

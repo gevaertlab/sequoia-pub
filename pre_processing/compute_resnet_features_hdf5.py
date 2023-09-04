@@ -19,18 +19,18 @@ from resnet import resnet50
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
 
-    parser.add_argument('--ref_file', type=str, required=True, help='Reference file')
-    parser.add_argument('--patch_data_path', type=str, required=True, help='Directory where the patch is saved')
-    parser.add_argument('--feature_path', type=str, default="/oak/stanford/groups/ogevaert/data/Gen-Pred/features/", help='Output directory to save features')
+    parser.add_argument('--ref_file', default="/examples/ref_file.csv", type=str, required=True, help='Path with reference csv file')
+    parser.add_argument('--patch_data_path', default="/examples/Patches_hdf5", type=str, required=True, help='Directory where the patch is saved')
+    parser.add_argument('--feature_path', type=str, default="/examples/features", help='Output directory to save features')
     parser.add_argument('--max_patch_number', type=int, default=4000, help='Max number of patches to use per slide')
     parser.add_argument('--seed', type=int, default=99,
             help='Seed for random generation')
     parser.add_argument("--tcga_projects", help="the tcga_projects we want to use",
                         default=None, type=str, nargs='*')
-    parser.add_argument('--start', type=int, default=None,
-                        help='Index for start slide')
+    parser.add_argument('--start', type=int, default=0,
+                        help='Start slide index for parallelization')
     parser.add_argument('--end', type=int, default=None,
-                        help='Index for ending slide')
+                        help='End slide index for parallelization')
     args = parser.parse_args()
 
     np.random.seed(args.seed)

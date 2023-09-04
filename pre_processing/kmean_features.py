@@ -13,17 +13,17 @@ from utils import exists
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
-    parser.add_argument('--ref_file', type=str, required=True, help='Path with reference csv file')
-    parser.add_argument('--patch_data_path', type=str, required=True, help='Directory where the patch is saved')
-    parser.add_argument('--feature_path', type=str, default="/oak/stanford/groups/ogevaert/data/Gen-Pred/features/", help='Output directory to save features')
+    parser.add_argument('--ref_file', default="/examples/ref_file.csv", type=str, required=True, help='Path with reference csv file')
+    parser.add_argument('--patch_data_path', default="/examples/Patches_hdf5", type=str, required=True, help='Directory where the patch is saved')
+    parser.add_argument('--feature_path', type=str, default="/examples/features", help='Output directory to save features')
     parser.add_argument('--num_clusters', type=int, default=100,
                         help='Number of clusters for the kmeans')
     parser.add_argument("--tcga_projects", help="the tcga_projects we want to use",
                         default=None, type=str, nargs='*')
     parser.add_argument('--start', type=int, default=0,
-                        help='Index for start slide')
+                        help='Start slide index for parallelization')
     parser.add_argument('--end', type=int, default=None,
-                        help='Index for ending slide')
+                        help='End slide index for parallelization')
     parser.add_argument("--gtex", help="using gtex data",
                     action="store_true")
     parser.add_argument('--gtex_tissue', type=str, default=None,
@@ -61,26 +61,6 @@ if __name__ == '__main__':
         df = df.iloc[:args.end]
 
     print(f'New number of slides = {df.shape[0]}')
-
-    # ##### get matching IDs for slides where we have both genes and patches
-    # patch_data_path = args.patch_data_path
-    # gene_ids = [i if ('.svs' in i) else i+'.svs' for i in df['wsi_file_name'].values]
-    # patch_ids = os.listdir(patch_data_path)
-    # patch_ids = [i if ('.svs' in i) else i+'.svs' for i in patch_ids]
-
-    # matching = [i for i in gene_ids if i in patch_ids]
-    # not_matching = [i for i in gene_ids if i not in patch_ids]
-    # print('Amount matching: '+str(len(matching))+', amount not: '+str(len(not_matching)))
-    # new_matching = []
-    # if args.gtex:
-    #     # Globus filename ID has 25 instead of 26 sometimes at the end
-    #     changed_ids = ['-'.join(i.split('-')[:2])+'-'+i.split('-')[-1][:2]+i.split('-')[-1][2:4].replace('26','25')+'.svs' for i in not_matching]
-    #     new_matching = [i for i in changed_ids if i in patch_ids]
-    #     print('Amount new matching: '+str(len(new_matching)))
-    
-    # all_wsis_matching = matching + new_matching
-    # print('Total amount matching: '+str(len(all_wsis_matching)))
-   # for WSI in tqdm(all_wsis_matching):
 
     for i, row in tqdm(df.iterrows()):
         WSI = row['wsi_file_name']

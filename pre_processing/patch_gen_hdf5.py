@@ -147,18 +147,20 @@ def process(opts):
 
 
 parser = argparse.ArgumentParser(description='Generate patches from a given folder of images')
-parser.add_argument('--ref_file', required=False, metavar='ref_file', type=str,
+parser.add_argument('--ref_file', default="examples/ref_file.csv" required=False, metavar='ref_file', type=str,
                     help='Path to the ref_file, if provided, only the WSIs in the ref file will be processed')
-parser.add_argument('--wsi_path', default="/oak/stanford/groups/ogevaert/data/IvyGap/pyramid_first_tissue", metavar='WSI_PATH', type=str,
+parser.add_argument('--wsi_path', default="examples/HE", metavar='WSI_PATH', type=str,
                     help='Path to the input directory of WSI files')
-parser.add_argument('--patch_path', default="/oak/stanford/groups/ogevaert/data/IvyGap/Patches112x112_hdf5" ,metavar='PATCH_PATH', type=str,
+parser.add_argument('--patch_path', default="examples/Patches_hdf5" ,metavar='PATCH_PATH', type=str,
                     help='Path to the output directory of patch images')
-parser.add_argument('--mask_path', default="/oak/stanford/groups/ogevaert/data/IvyGap/Patches112x112_hdf5", metavar='MASK_PATH', type=str,
+parser.add_argument('--mask_path', default="examples/Patches_hdf5", metavar='MASK_PATH', type=str,
                     help='Path to the  directory of numpy masks')             
 parser.add_argument('--patch_size', default=256, type=int, help='patch size, '
                                                                 'default 256')
-parser.add_argument('--start', default=None, type=int, help='start index')
-parser.add_argument('--end', default=None, type=int, help='end index')
+parser.add_argument('--start', type=int, default=0,
+                    help='Start slide index for parallelization')
+parser.add_argument('--end', type=int, default=None,
+                    help='End slide index for parallelization')
 parser.add_argument('--max_patches_per_slide', default=None, type=int)
 parser.add_argument('--dezoom_factor', default=1.0, type=float,
                     help='dezoom  factor, 1.0 means the images are taken at 20x magnification, 2.0 means the images are taken at 40x magnification')

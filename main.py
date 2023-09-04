@@ -68,11 +68,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
 
     # general args
-    parser.add_argument('--src_path', type=str, default='/oak/stanford/groups/ogevaert/data/Gen-Pred/', help='project path')
-    parser.add_argument('--ref_file', type=str, default=None, help='path to reference file')
+    parser.add_argument('--src_path', type=str, default='.', help='project path')
+    parser.add_argument('--ref_file', type=str, default='examples/ref_file.csv', help='path to the reference csv file')
     parser.add_argument('--prediction_target', type=str, default='gene_expression', help='whether you are predicting gene expression or cell_state distr. should be "gene_expression" or "cell_state"')
     parser.add_argument('--tcga_projects', help="the tcga_projects we want to use, separated by comma", default=None, type=str)
-    parser.add_argument('--feature_path', type=str, default="/oak/stanford/groups/ogevaert/data/Gen-Pred/features/", help='path to resnet and clustered features')
+    parser.add_argument('--feature_path', type=str, default="examples/features/", help='path to resnet and clustered features')
     parser.add_argument('--save_dir', type=str, default='vit_exp', help='parent destination folder')
     parser.add_argument('--cohort', type=str, default="TCGA", help='cohort name for creating the saving folder of the results')
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name for creating the saving folder of the results')
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     run = None
     if args.log:
-        run = wandb.init(project="visgene", entity='mpizuric', config=args, name=args.exp_name) 
+        run = wandb.init(project="visgene", entity='username', config=args, name=args.exp_name) 
 
     ############################################## data prep ##############################################
     path_csv = args.ref_file
