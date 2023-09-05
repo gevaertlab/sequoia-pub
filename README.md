@@ -65,6 +65,20 @@ To run the HE2RNA model, please use the bash script: `scripts/run_he2rna.sbatch`
 
 Scripts for predicting spatial gene expression levels within the same tissue slide are wrapped in: `spatial_vis`
 
+- ```visualize.py``` is the file to generate spatial predictions made with a saved SEQUOIA model. 
+  - the arguments are explained in the file
+  - output: the output is a dataframe that contains the following columns:
+  ```
+  - xcoord: the x coordinate of a tile (absolute position of tile in the WSI -- note that adjacent tiles will have coordinates that are tile_width apart!)
+  - ycoord: same as xcoord for the y
+  - xcoord_tf: the x coordinate of a tile when transforming the original coordinates to start in the left upper corner at position x=0,y=0 and with distance 1 between tiles (i.e. next tile has coordinate x=1,y=0)
+  - ycoord_tf: same as xcoord_tf for the y
+  - gene_{x}: for each gene, there will be a column 'gene_{x}' that contains the spatial prediction for that gene of the model from fold {x}, with x = 1..num_folds
+  - gene: for each gene there will also be a column without the _{x} part, which represents the average across the used folds
+  ```
+- ```get_emd.py``` contains code to calculate the two dimensional Earth Mover's Distance between a prediction map (generated with ```visualize.py``` script) and ground truth spatial transcriptomics.
+- ```gbm_celltype_analysis.py``` contains (1) code to examine spatial co-expression of genes for the four meta-modules described in the paper; (2) code to visualize spatial organization of meta-modules on the considered slides.
+
 
 
 
