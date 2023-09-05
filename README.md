@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/sequoia-logo.png"/>
+</p>
+
+
 # :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
 
 ## Fold structure
