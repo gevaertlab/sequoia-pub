@@ -1,4 +1,4 @@
-# SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
+# :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
 
 ## Fold structure
 
