@@ -49,7 +49,7 @@ To pretrain the weights of the model on normal tissues, please use the script `p
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
-The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes used for pretraining, which is depracated now. And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
+The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes that were used for pretraining (needed for checkpoint loading). And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
 
 ## Evaluation
 
