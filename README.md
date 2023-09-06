@@ -5,6 +5,10 @@
 
 # :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
 
+<p align="center">
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/overview.png"/>
+</p>
+
 ## Fold structure
 
 - `scripts`: example bash (driver) scripts to run the pre-processing, training and evaluation.
