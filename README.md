@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/seq-logo.png"/>
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/seq-logo.png"/>
 </p>
 
 
@@ -11,7 +11,7 @@ _Cancer is a heterogeneous disease that demands precise molecular profiling for 
 
 **Overview**
 <p align="center">
-  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/overview.png"/>
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview.png"/>
 </p>
 
 ## Fold structure
