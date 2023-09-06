@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/sequoia-logo.png"/>
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/seq-logo.png"/>
 </p>
 
 
