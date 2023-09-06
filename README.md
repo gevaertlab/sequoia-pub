@@ -5,6 +5,11 @@
 
 # :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
 
+**Abstract**
+
+_Cancer is a heterogeneous disease that demands precise molecular profiling for better understanding and management. RNA-sequencing has emerged as a potent tool to unravel the moleclular heterogeneity. However, large-scale characterization of cancer transcriptomes is hindered by the limitations of costs and tissue accessibility. Here, we develop SEQUOIA, a deep learning model employing a transformer encoder to predict cancer transcriptomes from whole-slide histology images. We pre-train the model using data from 2,242 normal tissues, and the model is fine-tuned and evaluated in 4,218 tumor samples across nine cancer types. The model is further validated across two independent cohorts compromising 1,305 tumors. The highest performance was observed in cancers from breast, kidney and lung, where  SEQUOIA accurately predicted 13,798, 10,922 and 9,735 genes, respectively. The well predicted genes are associated with the regulation of inflammatory response, cell cycles and hypoxia-related metabolic pathways. Leveraging the well predicted genes, we develop a digital signature to predict the risk of recurrence in breast cancer. While the model is trained at the tissue-level, we showcase its potential in predicting spatial gene expression patterns using spatial transcriptomics datasets. SEQUOIA deciphers the molecular complexity of tumors from histology images, opening avenues for improved cancer management and personalized therapies._
+
+**Overview**
 <p align="center">
   <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/overview.png"/>
 </p>
