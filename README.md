@@ -89,7 +89,9 @@ Scripts for predicting spatial gene expression levels within the same tissue sli
 - ```gbm_celltype_analysis.py``` contains (1) code to examine spatial co-expression of genes for the four meta-modules described in the paper; (2) code to visualize spatial organization of meta-modules on the considered slides.
 
 
+# License
 
+&copy; [Gevaert's Lab](https://med.stanford.edu/gevaertlab.html) MIT License
 
 
 
