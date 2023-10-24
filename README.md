@@ -11,7 +11,7 @@ _Cancer is a heterogeneous disease that demands precise molecular profiling for 
 
 **Overview**
 <p align="center">
-  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview.png"/>
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview2.png"/>
 </p>
 
 ## Fold structure
