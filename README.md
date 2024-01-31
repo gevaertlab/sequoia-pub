@@ -22,6 +22,18 @@ _Cancer is a heterogeneous disease that demands precise molecular profiling for 
 - `evaluation`: evaluation scripts.
 - `spatial_vis`: scripts for generating spatial predictions of gene expression values. 
 
+## System requirements
+
+Software dependencies and versions are listed in requirements.txt
+
+## Installation
+
+First, clone this git repository: `git clone https://github.com/gevaertlab/sequoia-pub.git`
+
+Then, create a conda environment: `conda create -n myenv python=3.9`
+
+Finally, install the required package dependencies: `pip install -r requirements.txt`
+
 ## Pre-processing
 
 Scripts for pre-processing are located in the `pre-processing` folder. All computational processes requires a *reference.csv* file, which has one row per WSI and their corresponding gene expression values. The RNA columns are named with the following format 'rna_{GENENAME}'. An optional 'tcga_project' column indicates the TCGA project that data belongs to. See `examples/ref_file.csv` for an example. 
