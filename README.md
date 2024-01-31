@@ -34,6 +34,8 @@ Then, create a conda environment: `conda create -n myenv python=3.9`
 
 Finally, install the required package dependencies: `pip install -r requirements.txt`
 
+Expected installation time in normal Linux environment: 15 mins 
+
 ## Pre-processing
 
 Scripts for pre-processing are located in the `pre-processing` folder. All computational processes requires a *reference.csv* file, which has one row per WSI and their corresponding gene expression values. The RNA columns are named with the following format 'rna_{GENENAME}'. An optional 'tcga_project' column indicates the TCGA project that data belongs to. See `examples/ref_file.csv` for an example. 
@@ -60,6 +62,8 @@ An example script to run the patch extraction: `scripts/extract_kmean_features.s
 - Outputs from Step 2 and Step 3:
 *features* folder, where the features obtained from the WSI using the Resnet and the K-means algorithm later on are stored. They are saved in HDF5 files, and inside there are two datasets: **resnet_features** and **cluster_features**.
 
+Expected run time: depend on the hardware (CPU/GPU) and the number of slides
+
 ## Pre-training and fine-tunning
 
 ### Step 4 (Optional): pretrain models on the GTEx data
@@ -71,6 +75,8 @@ To pretrain the weights of the model on normal tissues, please use the script `p
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
 The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes that were used for pretraining (needed for checkpoint loading). And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
+
+Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 
 ## Evaluation
 
