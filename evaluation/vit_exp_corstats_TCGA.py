@@ -1,4 +1,4 @@
-# Assess prediction of vision transformatino for each individual gene and generate visulization 
+# Assess the prediction for each individual gene across cancer types
 import pandas as pd
 import pickle as pl
 import pdb
