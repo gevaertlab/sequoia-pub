@@ -24,31 +24,7 @@ def score2percentile(score, ref):
     percentile = percentileofscore(ref, score)
     return percentile
 
-def get_average(xcoord_tf, ycoord_tf, df, resize_factor, num_tiles, offset):
-    """"
-    for xcoord_tf and ycoord_tf in df2, get the corresponding
-    average gene expression value from df, where the resize_factor 
-    is equal to factor (to match the two resolutions)
-    """
-
-    xcoord_tf_matched = xcoord_tf * resize_factor
-    ycoord_tf_matched = ycoord_tf * resize_factor
-    
-    # note: the WSI coordinates are for patch starting at left upper corner
-    window = df[ (df['x_tf'] >= xcoord_tf_matched - offset) & 
-                 (df['y_tf'] >= ycoord_tf_matched - offset) &
-                 (df['x_tf'] < xcoord_tf_matched + num_tiles * resize_factor + offset) & 
-                 (df['y_tf'] < ycoord_tf_matched + num_tiles * resize_factor + offset) ]
-
-    if len(window['gene_expr'].values) > 0:
-        #print(len(window['gene_expr'].values) )
-        return np.mean(window['gene_expr'].values)
-
-    else:
-        #import pdb; pdb.set_trace()
-        return np.nan
-
-def get_average2(xcoord, ycoord, df, num_tiles): 
+def get_average(xcoord, ycoord, df, num_tiles): 
 
     distances_x = np.power(df['x'] - xcoord, 2).values
     distances_y = np.power(df['y'] - ycoord, 2).values
@@ -128,8 +104,8 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     slide_nr = args.slide_nr
-    preds_path = f'/oak/stanford/groups/ogevaert/data/Gen-Pred/visualizations/spatial_GBM_pred/{args.pred_folder}/'
-    dest_path = f'/oak/stanford/groups/ogevaert/data/Gen-Pred/visualizations/comparisons/{args.save_folder}/'
+    preds_path = f'./visualizations/spatial_GBM_pred/{args.pred_folder}/'
+    dest_path = f'./visualizations/comparisons/{args.save_folder}/'
 
     slide_name = 'HRI_'+str(slide_nr)+'_T.tif'
     print(slide_name)
@@ -168,7 +144,7 @@ if __name__=='__main__':
         try:
 
             # get ground truth data
-            AnnData_dir = "/oak/stanford/groups/ogevaert/data/Spatial_Heiland/data/AnnDataObject/raw"
+            AnnData_dir = "./data/Spatial_Heiland/data/AnnDataObject/raw"
             adata = sc.read_h5ad(os.path.join(AnnData_dir, f'{slide_nr}_T.h5ad'))
             sc.pp.normalize_total(adata, inplace=True)
             sc.pp.log1p(adata)
@@ -186,36 +162,19 @@ if __name__=='__main__':
             # transform ground truth to same resolution
             df2 = pd.read_csv(csv_path)
             df2 = df2.dropna(axis=0, how='any')
-            df2['ground_truth'] = df2.apply(lambda row: get_average2(row['xcoord'], row['ycoord'], df, num_tiles=num_tiles), axis=1)
+            df2['ground_truth'] = df2.apply(lambda row: get_average(row['xcoord'], row['ycoord'], df, num_tiles=num_tiles), axis=1)
             df2 = df2.dropna(axis=0, how='any')
 
-            # transform to percentile and perform median filtering 
+            # perform median filtering and transform to percentile
             # (med filtering only for ground truth, gene prediction is already smooth because of sliding window method)
-            ref = df2['ground_truth'].values
-            df2['ground_truth_perc'] = df2.apply(lambda row: score2percentile(row['ground_truth'], ref), axis=1)
-            df2['ground_truth_filt'] = df2.apply(lambda row: median_filter(df2, 'ground_truth_perc', row['xcoord_tf'], row['ycoord_tf'], 1), axis=1)
-            
-            #df2['ground_truth_filt'] = df2.apply(lambda row: median_filter(df2, 'ground_truth', row['xcoord_tf'], row['ycoord_tf'], 1), axis=1)
-            #ref = df2['ground_truth_filt'].values
-            #df2['ground_truth_filt'] = df2.apply(lambda row: score2percentile(row['ground_truth_filt'], ref), axis=1)
+            df2['ground_truth_filt'] = df2.apply(lambda row: median_filter(df2, 'ground_truth', row['xcoord_tf'], row['ycoord_tf'], 1), axis=1)
+            ref = df2['ground_truth_filt'].values
+            df2['ground_truth_filt'] = df2.apply(lambda row: score2percentile(row['ground_truth_filt'], ref), axis=1)
 
             ref2 = df2[gene].values
             df2[gene + '_filt'] = df2.apply(lambda row: score2percentile(row[gene], ref2), axis=1) 
-            #df2[gene + '_filt'] = df2[gene]
             
             for i, gt_col, gene_col in zip(range(2), ['ground_truth', 'ground_truth_filt'], [gene, gene + '_filt']):
-
-                # binarize and calculate sensitivity
-                quant = df2[gt_col].quantile(0.75)
-                quant2 = df2[gene_col].quantile(0.75)
-                df2['gt_binary'] = df2[gt_col].apply(lambda x: 1 if x >= quant else 0)
-                df2[gene_col+'_binary'] = df2[gene_col].apply(lambda x: 1 if x >= quant2 else 0)
-                tp = df2[(df2['gt_binary']==1)&(df2[gene_col+'_binary']==1)]
-                fn = df2[(df2['gt_binary']==1)&(df2[gene_col+'_binary']==0)]
-                sens = tp.shape[0]/(tp.shape[0]+fn.shape[0]+1e-10)
-
-                # calculate correlation
-                coef, p = pearsonr(df2[gt_col], df2[gene_col])
 
                 # get EMD
                 max_x = max(df2.xcoord_tf)
@@ -230,20 +189,14 @@ if __name__=='__main__':
                 emd = calculate_emd(arr0, arr1, norm=False)
 
                 if i == 0:
-                    sens_vals[gene] = sens
-                    correlations[gene] = coef
-                    pvals[gene] = p
                     emds[gene] = emd
                 else:
-                    sens_vals_filt[gene] = sens
-                    correlations_filt[gene] = coef
-                    pvals_filt[gene] = p
                     emds_filt[gene] = emd
 
             ##### enough to only run this once
-            # # write the area, nr of tiles per slide to a file so normalization can be done afterwards if desired
+            # # write the area, nr of tiles per slide to a file so normalization can be done afterwards 
             # if i_ == 0:
-            #     filename = "/oak/stanford/groups/ogevaert/data/Gen-Pred/visualizations/spatial_GBM_pred/slide_info.txt"
+            #     filename = "./visualizations/spatial_GBM_pred/slide_info.txt"
             #     with open(filename, 'a') as file:
             #         file.write(f"{slide_name} \t {arr0.shape[0]*arr1.shape[0]} \t {df2.shape[0]} \n")
 
@@ -257,27 +210,14 @@ if __name__=='__main__':
 
     gc.collect()
 
-
-    corr_df = pd.DataFrame(correlations.items(), columns=['gene', 'corr'])
-    sens_df = pd.DataFrame(sens_vals.items(), columns=['gene', 'sens'])
-    pval_df = pd.DataFrame(pvals.items(), columns=['gene', 'pval'])
     emd_df = pd.DataFrame(emds.items(), columns=['gene', 'emd'])
     nr_gt_df = pd.DataFrame(nr_gt_vals.items(), columns=['gene', 'nr_gt_vals'])
 
-    corr_df_filt = pd.DataFrame(correlations_filt.items(), columns=['gene', 'corr_filt'])
-    sens_df_filt = pd.DataFrame(sens_vals_filt.items(), columns=['gene', 'sens_filt'])
-    pval_df_filt = pd.DataFrame(pvals_filt.items(), columns=['gene', 'pval_filt'])
     emd_df_filt = pd.DataFrame(emds_filt.items(), columns=['gene', 'emd_filt'])
     nr_gt_df_filt = pd.DataFrame(nr_gt_vals_filt.items(), columns=['gene', 'nr_gt_vals_filt'])
 
-    total_df = pd.merge(pd.merge(pd.merge(pd.merge(pd.merge(pd.merge(pd.merge(pd.merge(pd.merge(
-                                                    corr_df, pval_df, on='gene'), 
-                                                    sens_df, on='gene'), 
-                                                    emd_df, on='gene'), 
+    total_df = pd.merge(pd.merge(pd.merge(pd.merge( emd_df, on='gene'), 
                                                     nr_gt_df, on='gene'),
-                                                    corr_df_filt, on='gene'),
-                                                    sens_df_filt, on='gene'),
-                                                    pval_df_filt, on='gene'),
                                                     emd_df_filt, on='gene'),
                                                     nr_gt_df_filt, on='gene')
 
@@ -287,54 +227,3 @@ if __name__=='__main__':
 
 
 
-
-
-
-#     condition = coef > 0.1 #True
-        #     if condition:
-        #         # visualize
-        #         if use_percentile:
-
-        #             ref2 = df2[gene].values
-        #             df2[gene+'_perc'] = df2.apply(lambda row: score2percentile(row[gene], ref2), axis=1)
-
-        #             ref3 = df2['ground_truth'].values
-        #             df2['ground_truth_perc'] = df2.apply(lambda row: score2percentile(row['ground_truth'], ref3), axis=1)
-
-        #             if median_filtering:
-        #                 ref4 = df2['ground_truth_filt'].values
-        #                 df2['ground_truth_filt_perc'] = df2.apply(lambda row: score2percentile(row['ground_truth_filt'], ref4), axis=1)
-        #                 col = 'ground_truth_filt_perc'
-        #             else:
-        #                 col = 'ground_truth_perc'
-
-        #             col_gene = gene+'_perc'
-        #             vmin = 0
-        #             vmax = 100
-
-        #         else:
-        #             vmin = min(min(df2[gene].values), min(df['gene_expr'].values))
-        #             vmax = max(max(df2[gene].values), max(df['gene_expr'].values))
-        #             col = 'ground_truth'
-        #             col_gene = gene
-
-        #         f, axarr = plt.subplots(1,2, figsize=((15/fig_resize,5)))
-
-        #         axarr[1].scatter(df2['xcoord_tf']*2, df2['ycoord_tf']*2, c=df2[col], s = 24*fig_resize, vmin=vmin, vmax=vmax)
-        #         axarr[0].scatter(df2['xcoord_tf']*2, df2['ycoord_tf']*2, c=df2[col_gene], s = 24*fig_resize, vmin=vmin, vmax=vmax)
-                
-        #         axarr[0].axis('off')
-        #         axarr[1].axis('off')
-        #         axarr[0].invert_yaxis()
-        #         axarr[1].invert_yaxis()
-        #         axarr[0].axis('equal')
-        #         axarr[1].axis('equal')
-
-        #         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax, clip=True)
-        #         mapper = cm.ScalarMappable(norm=norm) 
-
-        #         plt.colorbar(mapper, ax=axarr.ravel().tolist(), shrink=0.95)
-        #         plt.suptitle(gene +', corr %.3f, p = %.3g' %(coef, p), y=0.95)
-        #         plt.savefig(dest_path + '/' + gene+'.png', bbox_inches='tight', dpi=300)
-        #         plt.close('all')
-        #         gc.collect() # clear memory 

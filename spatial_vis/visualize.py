@@ -14,18 +14,17 @@ from torchvision import transforms
 from tqdm import tqdm
 
 import sys
-sys.path.append('/oak/stanford/groups/ogevaert/data/Gen-Pred/src/')
-sys.path.append('/oak/stanford/groups/ogevaert/data/Gen-Pred/src/results_analysis/')
+sys.path.append('./src/')
+sys.path.append('./src/results_analysis/')
 
 from results_analysis.analyze_significance import read_pickle
-from he2rna import HE2RNA
 from vit_new import ViT
 from resnet import resnet50
 
 BACKGROUND_THRESHOLD = .5
 
 def sliding_window_method(df, patch_size_resized, 
-                            resnet50, model, inds_gene_of_interest, stride, model_type='vit', device='cpu'):
+                            resnet50, model, inds_gene_of_interest, stride, device='cpu'):
 
     max_x = max(df['xcoord_tf'])
     max_y = max(df['ycoord_tf'])
@@ -61,9 +60,6 @@ def sliding_window_method(df, patch_size_resized,
                 # get ViT predictions
                 # model_predictions = predict(model, random_sample_patches)
                 with torch.no_grad():
-                    if model_type == 'he2rna':
-                        features_all = torch.unsqueeze(features_all, dim=0)
-                        features_all = rearrange(features_all, 'b c f -> b f c')
                     model_predictions = model(features_all)
                     
                 predictions = model_predictions.detach().cpu().numpy()[0]
@@ -97,29 +93,20 @@ if __name__=='__main__':
     parser.add_argument('--gene_names', type=str, help='name of genes to visualize, separated by commas. if you want all the predicted genes, pass "all" ')
     parser.add_argument('--wsi_file_name', type=str, help='wsi filename')
     parser.add_argument('--save_folder', type=str, help='destination folder')
-    parser.add_argument('--model_type', type=str, help='model to use "vit" or "he2rna"')
     parser.add_argument('--num_folds', type=int, help='num folds to aggregate over', default=5)
     args = parser.parse_args()
 
     # general 
     study = args.study
 
-    if args.model_type == 'vit':
-        checkpoint = '/oak/stanford/groups/ogevaert/data/Gen-Pred/vit_exp_log2FPKM-UQ_cor_stop/TCGA_pretrain_no_breast/'+ study + '/'
-        obj = read_pickle(checkpoint + 'test_results.pkl')[0]
-        gene_ids = obj['genes']
-    elif args.model_type == 'he2rna':
-        checkpoint = f'/oak/stanford/groups/ogevaert/data/Gen-Pred/owkin_results/log2FPKM-UQ_finetune/{study}/'
-        obj = read_pickle(checkpoint + 'test_results.pkl')[0]
-        gene_ids = obj['split_0']['genes']
-    else:
-        print('Please give correct model type')
-        exit()
+    checkpoint = './vit_exp_log2FPKM-UQ_cor_stop/TCGA_pretrain_no_breast/'+ study + '/'
+    obj = read_pickle(checkpoint + 'test_results.pkl')[0]
+    gene_ids = obj['genes']
 
     stride = 1 
     wsi_file_name = args.wsi_file_name
     project = args.project 
-    save_path = '/oak/stanford/groups/ogevaert/data/Gen-Pred/visualizations/' + project +'/' + args.save_folder + '/' + args.wsi_file_name + '/'
+    save_path = './visualizations/' + project +'/' + args.save_folder + '/' + args.wsi_file_name + '/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -134,32 +121,22 @@ if __name__=='__main__':
         
     # prepare and load WSI
     if 'TCGA' in wsi_file_name:
-        slide_path = '/oak/stanford/groups/ogevaert/data/Roche-TCGA/'+project+'/'
-        mask_path = '/oak/stanford/groups/ogevaert/data/Roche-TCGA/'+project+'_Masks/'
+        slide_path = './data/Roche-TCGA/'+project+'/'
+        mask_path = './data/Roche-TCGA/'+project+'_Masks/'
         mask = np.load(mask_path+wsi_file_name.replace('.svs', '')+'/'+'mask.npy')
         manual_resize = None # nr of um/px can be read from slide properties
-    elif 'pds' in wsi_file_name:
-        slide_path = '/oak/stanford/groups/ogevaert/data/PESO/'
-        mask_path = '/oak/stanford/groups/ogevaert/data/PESO/masks/'
-        mask = np.load(mask_path+wsi_file_name.replace('.tif', '.npy'))
-        manual_resize = 1 #because resolution is already 0.48um/px
-    elif project == 'IvyGap':
-        slide_path = '/oak/stanford/groups/ogevaert/data/IvyGap/pyramid_first_tissue/'
-        mask_path = '/oak/stanford/groups/ogevaert/data/IvyGap/np_masks/'
-        mask = np.load(mask_path+wsi_file_name.replace('.tiff', '.npy'))
-        manual_resize = 1 #because resolution is already 0.5um/px
     elif project == 'spatial_GBM_pred':
-        slide_path = '/oak/stanford/groups/ogevaert/data/Spatial_GBM/pyramid/'
-        mask_path = '/oak/stanford/groups/ogevaert/data/Spatial_GBM/masks/'
+        slide_path = './data/Spatial_GBM/pyramid/'
+        mask_path = './data/Spatial_GBM/masks/'
         mask = np.load(mask_path+wsi_file_name.replace('.tif', '.npy'))
-        
-        px_df = pd.read_csv('/oak/stanford/groups/ogevaert/data/Spatial_Heiland/data/classify/spot_diameter.csv')
+        px_df = pd.read_csv('./data/Spatial_Heiland/data/classify/spot_diameter.csv')
         diam = px_df[px_df['slide_id']==wsi_file_name.split('_')[1]+'_T']['pixel_diameter'].values[0]
         um_px = 55/diam # um/px for the WSI
         manual_resize = 0.5/um_px
     else:
         print('please provide correct file name format (containing "TCGA" or "pds") or correct project id ("IvyGap" or "spatial_GBM_pred")')
         exit()
+
     # slide, patch size
     slide = openslide.OpenSlide(slide_path+wsi_file_name)
     patch_size = 256 # at 20x (0.5um pp)
@@ -217,20 +194,11 @@ if __name__=='__main__':
     for fold in range(args.num_folds):
 
         fold_ckpt = checkpoint + 'model_best_' + str(fold) + '.pt'
-        if (fold == 0) and (args.model_type == 'vit'):
+        if (fold == 0):
             fold_ckpt = fold_ckpt.replace('_0','')
 
-        if args.model_type == 'vit':
-            model = ViT(num_outputs=len(gene_ids), 
-                            dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)
-            model.load_state_dict(torch.load(fold_ckpt, map_location=torch.device(device)))
-        elif args.model_type == 'he2rna':
-            model = HE2RNA(input_dim=2048, layers=[256,256],
-                                ks=[1,2,5,10,20,50,100],
-                                output_dim=len(gene_ids), device=device)
-            fold_ckpt = fold_ckpt.replace('best_','')
-            model.load_state_dict(torch.load(fold_ckpt, map_location=torch.device(device)).state_dict())
-            
+        model = ViT(num_outputs=len(gene_ids), dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)
+        model.load_state_dict(torch.load(fold_ckpt, map_location=torch.device(device)))
         model = model.to(device)
         model.eval()
 
@@ -246,7 +214,7 @@ if __name__=='__main__':
         preds = sliding_window_method(df=df, patch_size_resized=patch_size_resized, 
                                         resnet50=resnet50, model=model, 
                                         inds_gene_of_interest=inds_gene_of_interest, stride=stride,
-                                        model_type=args.model_type, device=device)
+                                        device=device)
 
         for ind_gene in inds_gene_of_interest:
             res_df[gene_ids[ind_gene] + '_' + str(fold)] = res_df.index.map(preds[ind_gene])

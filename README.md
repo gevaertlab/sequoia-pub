@@ -1,4 +1,18 @@
-# SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
+<p align="center">
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/seq-logo.png"/>
+</p>
+
+
+# :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
+
+**Abstract**
+
+_Cancer is a heterogeneous disease that demands precise molecular profiling for better understanding and management. RNA-sequencing has emerged as a potent tool to unravel the moleclular heterogeneity. However, large-scale characterization of cancer transcriptomes is hindered by the limitations of costs and tissue accessibility. Here, we develop SEQUOIA, a deep learning model employing a transformer encoder to predict cancer transcriptomes from whole-slide histology images. We pre-train the model using data from 2,242 normal tissues, and the model is fine-tuned and evaluated in 4,218 tumor samples across nine cancer types. The model is further validated across two independent cohorts compromising 1,305 tumors. The highest performance was observed in cancers from breast, kidney and lung, where  SEQUOIA accurately predicted 13,798, 10,922 and 9,735 genes, respectively. The well predicted genes are associated with the regulation of inflammatory response, cell cycles and hypoxia-related metabolic pathways. Leveraging the well predicted genes, we develop a digital signature to predict the risk of recurrence in breast cancer. While the model is trained at the tissue-level, we showcase its potential in predicting spatial gene expression patterns using spatial transcriptomics datasets. SEQUOIA deciphers the molecular complexity of tumors from histology images, opening avenues for improved cancer management and personalized therapies._
+
+**Overview**
+<p align="center">
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview2.png"/>
+</p>
 
 ## Fold structure
 
@@ -44,7 +58,7 @@ To pretrain the weights of the model on normal tissues, please use the script `p
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
-The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes used for pretraining, which is depracated now. And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
+The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes that were used for pretraining (needed for checkpoint loading). And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
 
 ## Evaluation
 
@@ -60,8 +74,24 @@ To run the HE2RNA model, please use the bash script: `scripts/run_he2rna.sbatch`
 
 Scripts for predicting spatial gene expression levels within the same tissue slide are wrapped in: `spatial_vis`
 
+- ```visualize.py``` is the file to generate spatial predictions made with a saved SEQUOIA model. 
+  - the arguments are explained in the file
+  - output: the output is a dataframe that contains the following columns:
+  ```
+  - xcoord: the x coordinate of a tile (absolute position of tile in the WSI -- note that adjacent tiles will have coordinates that are tile_width apart!)
+  - ycoord: same as xcoord for the y
+  - xcoord_tf: the x coordinate of a tile when transforming the original coordinates to start in the left upper corner at position x=0,y=0 and with distance 1 between tiles (i.e. next tile has coordinate x=1,y=0)
+  - ycoord_tf: same as xcoord_tf for the y
+  - gene_{x}: for each gene, there will be a column 'gene_{x}' that contains the spatial prediction for that gene of the model from fold {x}, with x = 1..num_folds
+  - gene: for each gene there will also be a column without the _{x} part, which represents the average across the used folds
+  ```
+- ```get_emd.py``` contains code to calculate the two dimensional Earth Mover's Distance between a prediction map (generated with ```visualize.py``` script) and ground truth spatial transcriptomics.
+- ```gbm_celltype_analysis.py``` contains (1) code to examine spatial co-expression of genes for the four meta-modules described in the paper; (2) code to visualize spatial organization of meta-modules on the considered slides.
 
 
+# License
+
+&copy; [Gevaert's Lab](https://med.stanford.edu/gevaertlab.html) MIT License
 
 
 

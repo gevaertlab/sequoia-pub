@@ -16,21 +16,14 @@ def score2percentile(score, ref):
     return percentile
 
 if __name__=='__main__':
-    root = '/oak/stanford/groups/ogevaert/data/Gen-Pred/'
+    root = '.'
     src_path = root + 'visualizations/spatial_GBM_pred/'
-    folder = 'gbm_celltypes2_vit/'
+    folder = 'gbm_celltypes/'
     draw_heatmaps = True
-    all_genes = np.load(root + 'gene_ids/gbm_experiments2/all.npy', allow_pickle=True)
-    only_sig = False
-
-    if only_sig:
-        resdf = pd.read_csv(root + 'results/significance/TCGA_pretrain_no_breast/TCGA_pretrain_no_breast_all_results.csv')
-        gbmdf = resdf[resdf['project']=='gbm']
-        sig_genes = gbmdf[gbmdf['significant']==True].gene_id.values
-        all_genes = [i for i in all_genes if i in sig_genes]
+    all_genes = np.load(root + 'gene_ids/gbm_experiments/all.npy', allow_pickle=True)
 
     slide_names = os.listdir(src_path + folder)
-    slide_names = [i for i in slide_names if i not in ['corr_maps', 'spatial_maps', 'HRI_255_T.tif']]
+    slide_names = [i for i in slide_names if i not in ['corr_maps', 'spatial_maps']]
     all_corr_dfs = []
 
     dests = [src_path + folder + '/corr_maps/', src_path + folder + '/spatial_maps/']
@@ -38,14 +31,14 @@ if __name__=='__main__':
         if not os.path.exists(dest):
             os.makedirs(dest)
 
-    ac = np.load(root + 'gene_ids/gbm_experiments2/AC.npy',allow_pickle=True)
-    g1s = np.load(root + 'gene_ids/gbm_experiments2/G1S.npy',allow_pickle=True)
-    g2m = np.load(root + 'gene_ids/gbm_experiments2/G2M.npy',allow_pickle=True)
-    mes1 = np.load(root + 'gene_ids/gbm_experiments2/MES1.npy',allow_pickle=True)
-    mes2 = np.load(root + 'gene_ids/gbm_experiments2/MES2.npy',allow_pickle=True)
-    npc1 = np.load(root + 'gene_ids/gbm_experiments2/NPC1.npy',allow_pickle=True)
-    npc2 = np.load(root + 'gene_ids/gbm_experiments2/NPC2.npy',allow_pickle=True)
-    opc = np.load(root + 'gene_ids/gbm_experiments2/OPC.npy',allow_pickle=True)
+    ac = np.load(root + 'gene_ids/celltypes/AC.npy',allow_pickle=True)
+    g1s = np.load(root + 'gene_ids/celltypes/G1S.npy',allow_pickle=True)
+    g2m = np.load(root + 'gene_ids/celltypes/G2M.npy',allow_pickle=True)
+    mes1 = np.load(root + 'gene_ids/celltypes/MES1.npy',allow_pickle=True)
+    mes2 = np.load(root + 'gene_ids/celltypes/MES2.npy',allow_pickle=True)
+    npc1 = np.load(root + 'gene_ids/celltypes/NPC1.npy',allow_pickle=True)
+    npc2 = np.load(root + 'gene_ids/celltypes/NPC2.npy',allow_pickle=True)
+    opc = np.load(root + 'gene_ids/celltypes/OPC.npy',allow_pickle=True)
     mapper = {}
 
     green = '#CEBC36'
@@ -119,7 +112,6 @@ if __name__=='__main__':
 
             plt.close()
             fig, ax = plt.subplots()
-            # max_lim = max(max(df.xcoord_tf), max(df.ycoord_tf))
             x_padding = int((max_lim-max(df.xcoord_tf))/2)
             y_padding = int((max_lim-max(df.ycoord_tf))/2)
             df['xcoord_tf'] += x_padding
@@ -155,4 +147,5 @@ if __name__=='__main__':
     pl.ax_col_dendrogram.set_visible(False)
     plt.savefig(src_path + folder + '/corr_maps/total_clustered.png', bbox_inches='tight', dpi=300)
     
-    import pdb; pdb.set_trace()
+
+
