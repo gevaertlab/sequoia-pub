@@ -9,9 +9,8 @@ import torch
 from torchvision import transforms
 import h5py
 
-import pdb 
+import pdb
 
-from wsi_model import *
 from read_data import *
 from resnet import resnet50
 
@@ -60,12 +59,12 @@ if __name__ == '__main__':
 
     df = pd.read_csv(path_csv)
     # there could be duplicated WSIs mapped to different RNA files and we only need features for each WSI
-    df = df.drop_duplicates(["wsi_file_name"]) 
+    df = df.drop_duplicates(["wsi_file_name"])
 
     # Filter tcga projects
     if args.tcga_projects:
         df = df[df['tcga_project'].isin(args.tcga_projects)]
-    
+
     # indexing based on values for parallelization
     if args.start is not None and args.end is not None:
         df = df.iloc[args.start:args.end]
@@ -79,7 +78,7 @@ if __name__ == '__main__':
     for i, row in tqdm(df.iterrows()):
         WSI = row['wsi_file_name']
         WSI_slide = WSI.split('.')[0]
-        project = row['tcga_project'] 
+        project = row['tcga_project']
         WSI = WSI.replace('.svs', '') # in the ref file of prad there is a .svs that should not be there
 
         if not os.path.exists(os.path.join(patch_data_path, WSI_slide)):
@@ -125,4 +124,4 @@ if __name__ == '__main__':
             print(e)
             print(WSI)
             continue
-            
+
