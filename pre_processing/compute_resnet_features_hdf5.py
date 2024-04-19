@@ -11,8 +11,9 @@ import h5py
 
 import pdb
 
-from read_data import *
-from resnet import resnet50
+from src.wsi_model import *
+from src.read_data import *
+from src.resnet import resnet50
 
 
 if __name__ == '__main__':

@@ -14,16 +14,14 @@ from torchvision import transforms
 from tqdm import tqdm
 
 import sys
-sys.path.append('./src/')
-sys.path.append('./src/results_analysis/')
 
-from results_analysis.analyze_significance import read_pickle
-from vit_new import ViT
-from resnet import resnet50
+from src.utils import read_pickle
+from src.vit_new import ViT
+from src.resnet import resnet50
 
 BACKGROUND_THRESHOLD = .5
 
-def sliding_window_method(df, patch_size_resized, 
+def sliding_window_method(df, patch_size_resized,
                             resnet50, model, inds_gene_of_interest, stride, device='cpu'):
 
     max_x = max(df['xcoord_tf'])
@@ -35,7 +33,7 @@ def sliding_window_method(df, patch_size_resized,
 
     for x in tqdm(range(0, max_x, stride)):
         for y in range(0, max_y, stride):
-            
+
             window = df[((df['xcoord_tf']>=x) & (df['xcoord_tf']<(x+10))) &
                         ((df['ycoord_tf']>=y) & (df['ycoord_tf']<(y+10)))]
 
@@ -61,14 +59,14 @@ def sliding_window_method(df, patch_size_resized,
                 # model_predictions = predict(model, random_sample_patches)
                 with torch.no_grad():
                     model_predictions = model(features_all)
-                    
+
                 predictions = model_predictions.detach().cpu().numpy()[0]
 
                 # add predictions to dict (same for all tiles in window)
                 for ind_gene in inds_gene_of_interest:
                     for _, key in enumerate(window.index):
                         if stride == 10:
-                            preds[ind_gene][key] = predictions[ind_gene] 
+                            preds[ind_gene][key] = predictions[ind_gene]
                         else:
                             if key not in preds[ind_gene].keys():
                                 preds[ind_gene][key] = [predictions[ind_gene]]
@@ -96,29 +94,29 @@ if __name__=='__main__':
     parser.add_argument('--num_folds', type=int, help='num folds to aggregate over', default=5)
     args = parser.parse_args()
 
-    # general 
+    # general
     study = args.study
 
     checkpoint = './vit_exp_log2FPKM-UQ_cor_stop/TCGA_pretrain_no_breast/'+ study + '/'
     obj = read_pickle(checkpoint + 'test_results.pkl')[0]
     gene_ids = obj['genes']
 
-    stride = 1 
+    stride = 1
     wsi_file_name = args.wsi_file_name
-    project = args.project 
+    project = args.project
     save_path = './visualizations/' + project +'/' + args.save_folder + '/' + args.wsi_file_name + '/'
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     if args.gene_names != 'all':
-        # get gene names 
+        # get gene names
         if '.npy' in args.gene_names:
             gene_names = np.load(args.gene_names,allow_pickle=True)
         else:
             gene_names = args.gene_names.split(",")
     else:
         gene_names = gene_ids
-        
+
     # prepare and load WSI
     if 'TCGA' in wsi_file_name:
         slide_path = './data/Roche-TCGA/'+project+'/'
@@ -149,7 +147,7 @@ if __name__=='__main__':
     else:
         resize_factor = manual_resize
 
-    patch_size_resized = int(resize_factor*patch_size)  
+    patch_size_resized = int(resize_factor*patch_size)
     patch_size_in_mask = int(patch_size_resized/downsample_factor)
 
     # get valid coordinates (that have tissue)
@@ -164,7 +162,7 @@ if __name__=='__main__':
             patch_in_mask = mask[row_downs:row_downs+patch_size_in_mask,col_downs:col_downs+patch_size_in_mask]
             patch_in_mask = binary_dilation(patch_in_mask, iterations=3)
 
-            if patch_in_mask.sum() >= (BACKGROUND_THRESHOLD * patch_in_mask.size): 
+            if patch_in_mask.sum() >= (BACKGROUND_THRESHOLD * patch_in_mask.size):
                 # keep patch
                 valid_idx.append((col, row))
 
@@ -209,10 +207,10 @@ if __name__=='__main__':
                 inds_gene_of_interest.append(gene_ids.index(gene_name))
             except:
                 print('gene not in predicted values '+gene_name)
-        
+
         # get visualization
-        preds = sliding_window_method(df=df, patch_size_resized=patch_size_resized, 
-                                        resnet50=resnet50, model=model, 
+        preds = sliding_window_method(df=df, patch_size_resized=patch_size_resized,
+                                        resnet50=resnet50, model=model,
                                         inds_gene_of_interest=inds_gene_of_interest, stride=stride,
                                         device=device)
 
@@ -227,6 +225,6 @@ if __name__=='__main__':
 
     print('Done')
 
-    
 
-    
+
+

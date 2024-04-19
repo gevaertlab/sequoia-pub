@@ -8,8 +8,8 @@ import numpy as np
 import h5py
 from sklearn.cluster import KMeans
 
-from read_data import *
-from utils import exists
+from src.read_data import *
+from src.utils import exists
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     if args.tcga_projects:
         df = df[df['tcga_project'].isin(args.tcga_projects)]
 
-    print(f'Total number of slides = {df.shape[0]}')    
+    print(f'Total number of slides = {df.shape[0]}')
 
     # indexing based on values for parallelization
     if exists(args.start) and exists(args.end):
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         if args.gtex:
             project = args.gtex_tissue
         else:
-            project = df.iloc[0]['tcga_project'] 
+            project = df.iloc[0]['tcga_project']
             WSI = WSI.replace('.svs', '')
 
         path = os.path.join(args.feature_path, project, WSI)
@@ -82,17 +82,17 @@ if __name__ == '__main__':
             print(f'No resnet features for {path}')
             f.close()
             continue
-        
+
         if features.shape[0] < args.num_clusters:
             print(f'{WSI} less number of patches than clusters')
             f.close()
             continue
-        
+
         if 'cluster_features' in f.keys():
             print(f'{WSI}: Cluster feature already available')
             f.close()
             continue
-        
+
         kmeans = KMeans(n_clusters=args.num_clusters, random_state=0).fit(features)
         clusters = kmeans.labels_
 
@@ -101,9 +101,9 @@ if __name__ == '__main__':
             indexes = np.where(clusters == pos)
             features_aux = features[indexes]
             mean_features.append(np.mean(features_aux, axis=0))
-        
+
         mean_features = np.asarray(mean_features)
-        
+
         try:
             dset = f.create_dataset("cluster_features", data=mean_features)
             f.close()
