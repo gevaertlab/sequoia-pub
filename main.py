@@ -12,8 +12,7 @@ import random
 
 from read_data import *
 from utils import patient_kfold, grouped_strat_split
-from vit import ViT, evaluate
-from vit_new import train
+from vit_new import train, ViT, evaluate
 
 def custom_collate_fn(batch):
     """Remove bad entries from the dataloader
@@ -41,9 +40,9 @@ def filter_no_features(df, feature_path):
                         remove.append(wsi)
             except Exception as e:
                 remove.append(wsi)
-                
+
         all_wsis_with_features += wsis_with_features
-    
+
     remove += df[~df['wsi_file_name'].isin(all_wsis_with_features)].wsi_file_name.values.tolist()
     print(f'Original shape: {df.shape}')
     df = df[~df['wsi_file_name'].isin(remove)].reset_index(drop=True)
@@ -122,7 +121,7 @@ if __name__ == '__main__':
 
     run = None
     if args.log:
-        run = wandb.init(project="visgene", entity='username', config=args, name=args.exp_name) 
+        run = wandb.init(project="visgene", entity='username', config=args, name=args.exp_name)
 
     ############################################## data prep ##############################################
     path_csv = args.ref_file
@@ -154,7 +153,7 @@ if __name__ == '__main__':
         train_df = df.iloc[train_idx]
         val_df = df.iloc[val_idx]
         test_df = df.iloc[test_idx]
-        
+
         # save patient ids to file
         np.save(save_dir + '/train_'+str(i)+'.npy', np.unique(train_df.patient_id) )
         np.save(save_dir + '/val_'+str(i)+'.npy', np.unique(val_df.patient_id) )
@@ -174,7 +173,7 @@ if __name__ == '__main__':
             train_dataset = SuperTileCellStatesDataset(train_df, args.feature_path)
             val_dataset = SuperTileCellStatesDataset(val_df, args.feature_path)
             test_dataset = SuperTileCellStatesDataset(test_df, args.feature_path)
-        
+
         else:
             print("please provide correct prediction target")
             exit()
@@ -190,48 +189,48 @@ if __name__ == '__main__':
             sampler = None
             shuffle = True
 
-        train_dataloader = DataLoader(train_dataset, 
-                    num_workers=0, pin_memory=True, 
+        train_dataloader = DataLoader(train_dataset,
+                    num_workers=0, pin_memory=True,
                     shuffle=shuffle, batch_size=args.batch_size,
                     collate_fn=custom_collate_fn, sampler=sampler,
                     worker_init_fn=seed_worker,
                     generator=g)
-        
-        val_dataloader = DataLoader(val_dataset, 
-                    num_workers=0, pin_memory=True, 
+
+        val_dataloader = DataLoader(val_dataset,
+                    num_workers=0, pin_memory=True,
                     shuffle=True, batch_size=args.batch_size,
                     collate_fn=custom_collate_fn)
-        
-        test_dataloader = DataLoader(test_dataset, 
-                    num_workers=0, pin_memory=True, 
+
+        test_dataloader = DataLoader(test_dataset,
+                    num_workers=0, pin_memory=True,
                     shuffle=False, batch_size=args.batch_size,
                     collate_fn=custom_collate_fn)
-        
+
         num_outputs = train_dataset.num_genes if args.prediction_target == "gene_expression" else train_dataset.num_cell_states
         if args.checkpoint and args.change_num_genes: # if finetuning from model trained on gtex/tcga
-            model_path = args.checkpoint 
+            model_path = args.checkpoint
             if args.tcga_pretrain: # then we need to load different checkpoints for different folds (if pretrained on gtex, then just use the best model from gtex for all folds)
                 model_path = model_path + str(i) + '.pt'
 
-            model = ViT(num_outputs=args.num_genes, 
-                    dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64) 
+            model = ViT(num_outputs=args.num_genes,
+                    dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)
             model.load_state_dict(torch.load(model_path))
-            
+
             model.linear_head = nn.Sequential(
                 nn.LayerNorm(2048),
                 nn.Linear(2048, num_outputs))
 
         else: # if training from scratch or continuing training same model (then load state dict in next if)
-            model = ViT(num_outputs=num_outputs, 
-                    dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64) 
-        
+            model = ViT(num_outputs=num_outputs,
+                    dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)
+
         if args.checkpoint and not args.change_num_genes:
             model.load_state_dict(torch.load(args.checkpoint))
-        
+
         model = model.cuda()
 
-        optimizer = torch.optim.AdamW(list(model.parameters()), 
-                                        lr=args.lr, 
+        optimizer = torch.optim.AdamW(list(model.parameters()),
+                                        lr=args.lr,
                                         amsgrad=False,
                                         weight_decay=0.)
 
@@ -239,16 +238,16 @@ if __name__ == '__main__':
             'train': train_dataloader,
             'val': val_dataloader
         }
-        
+
         if args.train:
             model = train(model, dataloaders, optimizer, save_dir=save_dir, run=run, split=i, save_on=args.save_on, stop_on=args.stop_on, delta=0.5)
 
         preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff='_'+str(i))
 
-        random_model = ViT(num_outputs=num_outputs, dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)  
+        random_model = ViT(num_outputs=num_outputs, dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64)
         random_model = random_model.cuda()
         random_preds, _, _, _ = evaluate(random_model, test_dataloader, run=run, suff='_'+str(i)+'_rand')
-        
+
         if args.baseline and (args.prediction_target == "gene_expression"):
             mean_baseline = mean_baseline.reshape(-1, mean_baseline.shape[0])
             mean_baseline = np.repeat(mean_baseline, real.shape[0], axis=0)
@@ -268,10 +267,10 @@ if __name__ == '__main__':
 
         if args.baseline and (args.prediction_target == "gene_expression"):
             test_results['baseline'] = mean_baseline
-        
+
         test_results_splits[f'split_{i}'] = test_results
         i += 1
-    
+
     test_results_splits['genes'] = [x[4:] for x in df.columns if 'rna_' in x]
     with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
         pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
