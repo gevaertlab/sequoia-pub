@@ -9,13 +9,14 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
-from CorrelationStats import dependent_corr
 import sys
+
+from evaluation.CorrelationStats import dependent_corr
 
 def extract_gene_names(df):
     genes = [g for g in df.columns if g.startswith("rna_")]
     genes = [g[4:] for g in genes]
-    return genes 
+    return genes
 
 model = "sequoia"
 data_path = "./output"
@@ -32,7 +33,7 @@ for cancer_type in cancers:
     folds = 5
     with open(os.path.join(data_path, cancer_type, "test_results.pkl"), 'rb') as f:
         test_res = pl.load(f)
-    
+
     real = []
     pred = []
     random = []
@@ -89,7 +90,7 @@ for cancer_type in cancers:
         rmse_pred.append(rmse1)
         rmse_random.append(rmse2)
         valid_genes.append(gene)
-    
+
     combine_res = pd.DataFrame({"pred_real_r": pred_r,\
                             "random_real_r": random_r,\
                             'pearson_p': pearson_p,\
@@ -101,19 +102,19 @@ for cancer_type in cancers:
     combine_res = combine_res[~combine_res['Steiger_p'].isna()]
     _, fdr_p = fdrcorrection(combine_res['Steiger_p'])
     combine_res['fdr_Steiger_p'] = fdr_p
-        
+
     sig_res = combine_res[(combine_res['pred_real_r'] > 0) & \
                     (combine_res['pearson_p'] < 0.05) & \
                     (combine_res['pred_real_r'] > combine_res['random_real_r']) & \
                     (combine_res['Steiger_p'] < 0.05) & \
                     (combine_res['fdr_Steiger_p'] < 0.2)]
-    
+
     sig_res['cancer'] = cancer_type
     print(f"Found {sig_res.shape[0]} significant genes")
 
     if sig_res.shape[0] > 0:
         df_list.append(sig_res)
-        
+
 df_final = pd.concat(df_list)
 df_final.to_csv(os.path.join(save_path, "sig_genes.csv"))
 
