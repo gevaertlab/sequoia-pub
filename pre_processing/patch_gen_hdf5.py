@@ -1,5 +1,5 @@
 # This script generates pathes from  whole slide images (e.g. from TCGA) and save the extracted patches into a hdf5 file.
-# This will save all the paches but keeps the file number small. 
+# This will save all the paches but keeps the file number small.
 
 import pandas as pd
 import numpy as np
@@ -57,11 +57,11 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
     patch_folder_mask = os.path.join(mask_path, slide_id)
     if not os.path.isdir(patch_folder_mask):
         os.makedirs(patch_folder_mask)
-    
+
     if os.path.exists(os.path.join(patch_folder, "complete.txt")):
         print(f'{slide_id}: patches have already been extreacted')
         return
-    
+
     path_hdf5 = os.path.join(patch_folder, f"{slide_id}.hdf5")
     hdf = h5py.File(path_hdf5, 'w')
 
@@ -69,10 +69,10 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
     mask, mask_level = get_mask(slide)
     mask = binary_dilation(mask, iterations=3)
     mask = binary_erosion(mask, iterations=3)
-    np.save(os.path.join(patch_folder_mask, "mask.npy"), mask) 
+    np.save(os.path.join(patch_folder_mask, "mask.npy"), mask)
 
     mask_level = len(slide.level_dimensions) - 1
-    
+
     PATCH_LEVEL = 0
     BACKGROUND_THRESHOLD = .2
 
@@ -85,7 +85,7 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
         # handle slides with 40 magnification at base level
         resize_factor = float(slide.properties.get('aperio.AppMag', 20)) / 20.0
         if not slide.properties.get('aperio.AppMag', 20): print(f"magnifications for {slide_id} is not found, using default magnificantion 20X")
-        
+
         resize_factor = resize_factor * args.dezoom_factor
         patch_size_resized = (int(resize_factor * patch_size[0]), int(resize_factor * patch_size[1]))
         print(f"patch size for {slide_id}: {patch_size_resized}")
@@ -93,11 +93,11 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
         i = 0
         indices = [(x, y) for x in range(0, xmax, patch_size_resized[0]) for y in
                     range(0, ymax, patch_size_resized[0])]
-        
+
         # here, we generate all the pathes with valid mask
         if max_patches_per_slide is None:
             max_patches_per_slide = len(indices)
-        
+
         np.random.seed(5)
         np.random.shuffle(indices)
 
@@ -147,14 +147,14 @@ def process(opts):
 
 
 parser = argparse.ArgumentParser(description='Generate patches from a given folder of images')
-parser.add_argument('--ref_file', default="examples/ref_file.csv" required=False, metavar='ref_file', type=str,
+parser.add_argument('--ref_file', default="examples/ref_file.csv", required=False, metavar='ref_file', type=str,
                     help='Path to the ref_file, if provided, only the WSIs in the ref file will be processed')
 parser.add_argument('--wsi_path', default="examples/HE", metavar='WSI_PATH', type=str,
                     help='Path to the input directory of WSI files')
 parser.add_argument('--patch_path', default="examples/Patches_hdf5" ,metavar='PATCH_PATH', type=str,
                     help='Path to the output directory of patch images')
 parser.add_argument('--mask_path', default="examples/Patches_hdf5", metavar='MASK_PATH', type=str,
-                    help='Path to the  directory of numpy masks')             
+                    help='Path to the  directory of numpy masks')
 parser.add_argument('--patch_size', default=256, type=int, help='patch size, '
                                                                 'default 256')
 parser.add_argument('--start', type=int, default=0,
