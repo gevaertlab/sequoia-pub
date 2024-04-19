@@ -21,6 +21,7 @@ _Cancer is a heterogeneous disease that demands precise molecular profiling for 
 - `pre-processing`: pre-processing scripts.
 - `evaluation`: evaluation scripts.
 - `spatial_vis`: scripts for generating spatial predictions of gene expression values. 
+- `src`: main files for models and training.
 
 ## System requirements
 
