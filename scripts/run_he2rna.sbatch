@@ -1,5 +1,5 @@
 #!/bin/bash
-python3 he2rna.py \
+python3 src/he2rna.py \
         --path_csv examples/ref_file.csv \
         --subfolder he2rna \
         --exp_name BRCA \

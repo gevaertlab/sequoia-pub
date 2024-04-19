@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python3 main.py \
+python3 src/main.py \
         --ref_file examples/ref_file.csv \
         --save_dir output \
         --cohort TCGA \
