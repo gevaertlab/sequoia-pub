@@ -33,7 +33,9 @@ First, clone this git repository: `git clone https://github.com/gevaertlab/sequo
 
 Then, create a conda environment: `conda create -n myenv python=3.9`
 
-Finally, install the required package dependencies: `pip install -r requirements.txt`
+Install the required package dependencies: `pip install -r requirements.txt`
+
+Finally, install [Openslide](https://openslide.org/download/) (>v3.4.0)
 
 Expected installation time in normal Linux environment: 15 mins 
 
