@@ -31,7 +31,9 @@ Software dependencies and versions are listed in requirements.txt
 
 First, clone this git repository: `git clone https://github.com/gevaertlab/sequoia-pub.git`
 
-Then, create a conda environment: `conda create -n myenv python=3.9`
+Then, create a conda environment: `conda create -n sequoia python=3.9` and activate: `conda activate sequoia`
+
+Install the openslide library: `conda install -c conda-forge openslide==4.0.0`
 
 Finally, install the required package dependencies: `pip install -r requirements.txt`
 
