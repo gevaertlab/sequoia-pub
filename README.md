@@ -91,12 +91,12 @@ Some points that we want to emphasize:
 
 For running the benchmarked variations of the architecture:
 - MLP aggregation: for this part we made use of the implementation from HE2RNA, which can be found in `he2rna.py`. An example run script is provided in `scripts/run_he2rna.sh`
-- transformer aggregation: this model type is implemented in the `main.py`. use --model_type 'vis'.
+- transformer aggregation: this model type is implemented in the `main.py`. use ```--model_type``` 'vis'.
 
 
 ## Evaluation
 
-Pearson correlation analysis is performed to compare the predicted gene expression values to ground truth. The significantly well predicted genes are selected using correlation coefficient, p value, and by statistical comparisons to an untrained model with the same architecture.
+Pearson correlation and RMSE values are calculated to compare the predicted gene expression values to the ground truth. The significantly well predicted genes are selected using correlation coefficient, p value, rmse, and by statistical comparisons to an untrained model with the same architecture.
 
 Evaluation script: `evaluation/vit_exp_corstats_TCGA.py`
 

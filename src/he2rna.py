@@ -419,18 +419,17 @@ if __name__ == '__main__':
                                             path=save_dir)
 
         test_results = {
+            'real': labels,
             'preds': preds,
-            'labels': labels,
-            'genes':[x[4:] for x in df.columns if 'rna_' in x],
-            'preds_random': preds_random,
-            'labels_random': labels_random, # these should be equal to labels but adding this just as double check
-            'wsis': wsis,
-            'projs': projs
+            'random': preds_random,
+            'wsi_file_name': wsis,
+            'tcga_project': projs
         }
 
         test_results_splits[f'split_{i}'] = test_results
         i += 1
 
+    test_results_splits['genes'] = [x[4:] for x in df.columns if 'rna_' in x]
     with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
         pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
 
