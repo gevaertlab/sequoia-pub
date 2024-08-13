@@ -16,12 +16,12 @@ from evaluation.CorrelationStats import dependent_corr
 
 if __name__=='__main__':
     
-    res_dir = 'results_path'
+    model_dir = 'model_path'
     folds = 5
     cancers = ['brca', 'coad', 'gbm', 'kirp', 'kirc', 'luad', 'lusc', 'paad', 
               'prad', 'skcm', 'thca', 'ucec', 'hnsc', 'stad', 'blca', 'lihc']    
 
-    save_path = os.path.join(res_dir, 'results')
+    save_path = os.path.join(model_dir, 'results')
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -29,7 +29,7 @@ if __name__=='__main__':
     for cancer_type in cancers:
         try:
             print(cancer_type)
-            with open(os.path.join(res_dir, cancer_type, 'test_results.pkl'), 'rb') as f:
+            with open(os.path.join(model_dir, cancer_type, 'test_results.pkl'), 'rb') as f:
                 test_res = pl.load(f)
 
             real = []
