@@ -77,23 +77,28 @@ Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 
 To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
 
-### Step 5: Train or fine-tune the model on the TCGA data
+### Step 5: Train or fine-tune SEQUOIA on the TCGA data
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
-The parameters are explained within the `main.py` file. The ```--num_genes``` indicates the number of genes that were used for pretraining (needed for checkpoint loading). And the ```--train``` parameter is to train the model. To start from the pretrained weights, use the ```--use_pretrain``` and ```--checkpoint``` parameters. 
+The parameters are explained within the `main.py` file. 
 
-Expected run time: depend on the hardware (CPU/GPU) and the number of slides
+Some points that we want to emphasize:
+- If you pre-trained on a dataset that contains a different number of genes than the finetuning dataset, you need to set the ```--change_num_genes``` parameter to 1 and specify in the ```--num_genes``` parameter how many genes were used for pretraining. To indicate the path to the pretrained weights, use the ```--checkpoint``` parameters. 
+- ```--model_type``` is used to define the aggregation type. For the SEQUOIA model (linearized transformer aggregation) use 'vis'. 
+
+## Benchmarking
+
+For running the benchmarked variations of the architecture:
+- MLP aggregation: for this part we made use of the implementation from HE2RNA, which can be found in `he2rna.py`. An example run script is provided in `scripts/run_he2rna.sh`
+- transformer aggregation: this model type is implemented in the `main.py`. use --model_type 'vis'.
+
 
 ## Evaluation
 
 Pearson correlation analysis is performed to compare the predicted gene expression values to ground truth. The significantly well predicted genes are selected using correlation coefficient, p value, and by statistical comparisons to an untrained model with the same architecture.
 
 Evaluation script: `evaluation/vit_exp_corstats_TCGA.py`
-
-## Benchmark with the HE2RNA model
-
-To run the HE2RNA model, please use the bash script: `scripts/run_he2rna.sbatch`
 
 ## Spatial gene expression predictions
 

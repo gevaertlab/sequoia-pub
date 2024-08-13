@@ -33,7 +33,7 @@ from einops import rearrange
 import pickle
 
 from src.read_data import SuperTileRNADataset
-from src.utils import patient_split, patient_kfold
+from src.utils import patient_split, patient_kfold, custom_collate_fn, filter_no_features
 
 import h5py
 
@@ -317,49 +317,13 @@ def fit(model,
 
     return model
 
-def custom_collate_fn(batch):
-    """Remove bad entries from the dataloader
-    Args:
-        batch (torch.Tensor): batch of tensors from the dataaset
-    Returns:
-        collate: Default collage for the dataloader
-    """
-    batch = list(filter(lambda x: x[0] is not None, batch))
-    return torch.utils.data.dataloader.default_collate(batch)
-
-
-def filter_no_features(df, feature_path):
-    all_wsis = df.wsi_file_name.values
-    projects = np.unique(df.tcga_project)
-    all_wsis_with_features = []
-    remove = []
-
-    for proj in projects:
-        wsis_with_features = os.listdir(feature_path + proj)
-        # filter the ones without cluster_features
-        for wsi in wsis_with_features:
-            try:
-                with h5py.File(feature_path +proj+ '/'+wsi+'/'+wsi+'.h5', "r") as f:
-                    cols = list(f.keys())
-                    if 'cluster_features' not in cols:
-                        remove.append(wsi)
-            except Exception as e:
-                remove.append(wsi)
-
-        all_wsis_with_features += wsis_with_features
-
-    remove += df[~df['wsi_file_name'].isin(all_wsis_with_features)].wsi_file_name.values.tolist()
-    print(f'Original shape: {df.shape}')
-    df = df[~df['wsi_file_name'].isin(remove)].reset_index(drop=True)
-    print(f'New shape: {df.shape}')
-
-    return df
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
     parser.add_argument('--path_csv', type=str, help='path to csv file with gene expression info')
+    parser.add_argument('--feature_path', type=str, default="features/", help='path to resnet/uni and clustered features')
     parser.add_argument('--checkpoint', type=str, help='pretrained model path')
-    parser.add_argument("--change_num_genes", help="whether finetuning from a model trained on different number of genes", action="store_true")
+    parser.add_argument('--change_num_genes', help="whether finetuning from a model trained on different number of genes", action="store_true")
     parser.add_argument('--num_genes', type=int, help='number of genes in output of pretrained model')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--log', type=int, default=1, help='Whether to do the log with wandb')
@@ -367,10 +331,10 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
     parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     parser.add_argument('--num_workers', type=int, default=0, help='num workers dataloader')
-    parser.add_argument("--tcga_projects", help="the tcga_projects we want to use", default=None, type=str, nargs='*')
+    parser.add_argument('--tcga_projects', help="the tcga_projects we want to use", default=None, type=str, nargs='*')
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name')
     parser.add_argument('--subfolder', type=str, default="", help='subfolder where result will be saved')
-    parser.add_argument('--destfolder', type=str, default="/oak/stanford/groups/ogevaert/data/Gen-Pred/owkin_results/", help='destination folder')
+    parser.add_argument('--destfolder', type=str, default="", help='destination folder')
 
     args = parser.parse_args()
 
@@ -384,7 +348,7 @@ if __name__ == '__main__':
     experiment_name = args.exp_name
 
     if args.log:
-        run = wandb.init(project="visgene", entity='mpizuric', config=args, name=experiment_name)
+        run = wandb.init(project="sequoia", entity='entity_name', config=args, name=experiment_name)
 
     path_csv = args.path_csv
 
@@ -394,7 +358,7 @@ if __name__ == '__main__':
 
     ############################################## data prep ##############################################
     # filter out WSIs for which we don't have features
-    df = filter_no_features(df, '/oak/stanford/groups/ogevaert/data/Gen-Pred/features/')
+    df = filter_no_features(df, args.feature_path, 'cluster_features')
 
     ############################################## model training ##############################################v
 
@@ -406,9 +370,9 @@ if __name__ == '__main__':
         val_df = df.iloc[val_idx]
         test_df = df.iloc[test_idx]
 
-        train_dataset = SuperTileRNADataset(train_df, "/oak/stanford/groups/ogevaert/data/Gen-Pred/features/")
-        val_dataset = SuperTileRNADataset(val_df, "/oak/stanford/groups/ogevaert/data/Gen-Pred/features/")
-        test_dataset = SuperTileRNADataset(test_df, "/oak/stanford/groups/ogevaert/data/Gen-Pred/features/")
+        train_dataset = SuperTileRNADataset(train_df, args.feature_path)
+        val_dataset = SuperTileRNADataset(val_df, args.feature_path)
+        test_dataset = SuperTileRNADataset(test_df, args.feature_path)
 
         # SET num_workers TO 0 WHEN WORKING WITH hdf5 FILES
         train_loader = DataLoader(

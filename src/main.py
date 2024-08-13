@@ -24,9 +24,8 @@ if __name__ == '__main__':
     parser.add_argument('--ref_file', type=str, default=None, help='path to reference file')
     parser.add_argument('--sample-percent', type=float, default=None, help='Downsample available data to test the effect of having a smaller dataset. If None, no downsampling.')
     parser.add_argument('--tcga_projects', help="the tcga_projects we want to use, separated by comma", default=None, type=str)
-    parser.add_argument('--feature_path', type=str, default="features/", help='path to resnet and clustered features')
-    parser.add_argument('--feature_use', type=str, default="cluster_features", help='which feature to use for training the model')
-    parser.add_argument('--save_dir', type=str, default='vit_exp', help='parent destination folder')
+    parser.add_argument('--feature_path', type=str, default="features/", help='path to resnet/uni and clustered features')
+    parser.add_argument('--save_dir', type=str, default='saved_exp', help='parent destination folder')
     parser.add_argument('--cohort', type=str, default="TCGA", help='cohort name for creating the saving folder of the results')
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name for creating the saving folder of the results')
     parser.add_argument('--filter_no_features', type=int, default=1, help='Whether to filter out samples with no features')
@@ -91,7 +90,7 @@ if __name__ == '__main__':
         print(f'Filtered project {projects}')
 
     if args.filter_no_features:
-        df = filter_no_features(df, feature_path=args.feature_path, feature_name=args.feature_use)
+        df = filter_no_features(df, feature_path=args.feature_path, 'cluster_features')
     
     ############################################## kfold ##############################################
     train_idxs, val_idxs, test_idxs = patient_kfold(df, n_splits=args.k)
@@ -110,9 +109,9 @@ if __name__ == '__main__':
         np.save(save_dir + '/test_'+str(i)+'.npy', np.unique(test_df.patient_id) )
         
         # init dataset
-        train_dataset = SuperTileRNADataset(train_df, args.feature_path, args.feature_use)
-        val_dataset = SuperTileRNADataset(val_df, args.feature_path, args.feature_use)
-        test_dataset = SuperTileRNADataset(test_df, args.feature_path, args.feature_use)
+        train_dataset = SuperTileRNADataset(train_df, args.feature_path)
+        val_dataset = SuperTileRNADataset(val_df, args.feature_path)
+        test_dataset = SuperTileRNADataset(test_df, args.feature_path)
 
         num_outputs = train_dataset.num_genes 
         feature_dim = train_dataset.feature_dim
