@@ -3,7 +3,7 @@
 </p>
 
 
-# :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with grouped vision attention
+# :evergreen_tree: SEQUOIA: Digital profiling of cancer transcriptomes with linearized attention
 
 **Abstract**
 
@@ -105,7 +105,7 @@ Evaluation script: `evaluation/evaluate_model.py`. Output: three dataframes `all
 Scripts for predicting spatial gene expression levels within the same tissue slide are wrapped in: `spatial_vis`
 
 - ```visualize.py``` is the file to generate spatial predictions made with a saved SEQUOIA model. 
-  - the arguments are explained in the file
+  - the arguments are explained in the file. an example run file is provided in `scripts/run_visualize.sh`
   - output: the output is a dataframe that contains the following columns:
   ```
   - xcoord: the x coordinate of a tile (absolute position of tile in the WSI -- note that adjacent tiles will have coordinates that are tile_width apart!)

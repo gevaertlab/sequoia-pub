@@ -194,11 +194,11 @@ if __name__=='__main__':
                     emds_filt[gene] = emd
 
             ##### enough to only run this once
-            # # write the area, nr of tiles per slide to a file so normalization can be done afterwards 
-            # if i_ == 0:
-            #     filename = "./visualizations/spatial_GBM_pred/slide_info.txt"
-            #     with open(filename, 'a') as file:
-            #         file.write(f"{slide_name} \t {arr0.shape[0]*arr1.shape[0]} \t {df2.shape[0]} \n")
+            # write the area, nr of tiles per slide to a file so normalization can be done afterwards 
+            if i_ == 0:
+                filename = "./visualizations/spatial_GBM_pred/slide_info.txt"
+                with open(filename, 'a') as file:
+                    file.write(f"{slide_name} \t {arr0.shape[0]*arr1.shape[0]} \t {df2.shape[0]} \n")
 
             # also write per slide, per gene, the number of unique values in the ground truth to file to detect any artefacts if needed
             nr_gt_vals[gene] = len(np.unique(df2['ground_truth'].values))
