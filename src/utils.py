@@ -1,8 +1,45 @@
 import pandas as pd
 import numpy as np
+import os
+import h5py
+import pdb
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.model_selection import StratifiedGroupKFold
-import pickle
+import torch
+
+def custom_collate_fn(batch):
+    """Remove bad entries from the dataloader
+    Args:
+        batch (torch.Tensor): batch of tensors from the dataaset
+    Returns:
+        collate: Default collage for the dataloader
+    """
+    batch = list(filter(lambda x: x[0] is not None, batch))
+    return torch.utils.data.dataloader.default_collate(batch)
+
+
+def filter_no_features(df, feature_path, feature_name):
+    print(f'Filtering WSIs that do not have {feature_name} features')
+    projects = np.unique(df.tcga_project)
+    all_wsis_with_features = []
+    remove = []
+    for proj in projects:
+        wsis_with_features = os.listdir(os.path.join(feature_path, proj))
+        for wsi in wsis_with_features:
+            try:
+                with h5py.File(os.path.join(feature_path, proj, wsi, wsi+'.h5'), "r") as f:
+                    cols = list(f.keys())
+                    if feature_name not in cols:
+                        remove.append(wsi)
+            except Exception as e:
+                remove.append(wsi)        
+        all_wsis_with_features += wsis_with_features
+    remove += df[~df['wsi_file_name'].isin(all_wsis_with_features)].wsi_file_name.values.tolist()
+    print(f'Original shape: {df.shape}')
+    df = df[~df['wsi_file_name'].isin(remove)].reset_index(drop=True)
+    print(f'New shape: {df.shape}')
+    return df
+
 
 def patient_split(dataset, random_state=0):
     """Perform patient split of any of the previously defined datasets.
@@ -14,11 +51,11 @@ def patient_split(dataset, random_state=0):
         patients_train, test_size=0.2, random_state=random_state)
 
     indices = np.arange(len(dataset))
-    train_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] ==
+    train_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] == 
                         np.array(patients_train)[np.newaxis], axis=1)]
-    valid_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] ==
+    valid_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] == 
                         np.array(patients_val)[np.newaxis], axis=1)]
-    test_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] ==
+    test_idx = indices[np.any(np.array(dataset.patient_id)[:, np.newaxis] == 
                         np.array(patients_test)[np.newaxis], axis=1)]
 
     return train_idx, valid_idx, test_idx
@@ -95,40 +132,3 @@ def match_patient_kfold(dataset, splits):
 
 def exists(x):
     return x != None
-
-
-def grouped_strat_split(df, n_splits1=5, n_splits2=10, random_state=0, strat_col='tcga_project'):
-    """
-    Grouped stratified split (grouped by patient id, strat by tcga_project)
-    n_splits1 is for train/test split
-    n_splits2 is for train/val split (only one fold is used in this case)
-    """
-
-    cv = StratifiedGroupKFold(n_splits1, shuffle=True, random_state=random_state)
-
-    train_idx = []
-    valid_idx = []
-    test_idx = []
-
-    for ind_train, ind_test in cv.split(X=df.index, y=df[strat_col], groups=df.patient_id):
-        train_df_complete = df.iloc[ind_train]
-        test_idx.append(ind_test)
-
-        cv2 = StratifiedGroupKFold(n_splits2, shuffle=True, random_state=random_state)
-
-        for k, (ind_train, ind_val) in enumerate(cv2.split(X=train_df_complete.index, y=train_df_complete.tcga_project, groups=train_df_complete.patient_id)):
-            if k == 0:
-                train_idx.append(train_df_complete.index[ind_train])
-                valid_idx.append(train_df_complete.index[ind_val])
-
-    return train_idx, valid_idx, test_idx
-
-def read_pickle(path):
-    objects = []
-    with (open(path, "rb")) as openfile:
-        while True:
-            try:
-                objects.append(pickle.load(openfile))
-            except EOFError:
-                break
-    return objects

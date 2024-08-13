@@ -77,7 +77,7 @@ Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 
 To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
 
-### Step 5: Train or fine-tune the vision transformer on the TCGA data
+### Step 5: Train or fine-tune the model on the TCGA data
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
