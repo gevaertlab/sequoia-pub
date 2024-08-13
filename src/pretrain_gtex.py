@@ -8,6 +8,7 @@ import wandb
 from src.read_data import *
 from src.vit_new import ViT, train
 from src.he2rna import HE2RNA, fit
+from src.tformer_lin import ViS 
 
 def custom_collate_fn(batch):
     """Remove bad entries from the dataloader
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--feature_path', type=str, default="/examples/features", help='path to resnet and clustered features')
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name used to create saved model name')
     parser.add_argument('--log', type=int, default=0, help='whether to log the loss')
-    parser.add_argument('--model', type=str, default='vit', help='model to pretrain, "vit" or "he2rna"')
+    parser.add_argument('--model', type=str, default='vit', help='model to pretrain, "he2rna" for MLP aggregation, "vit" for transformer aggregation or "vis" for linearized transformer aggregation')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--num_epochs', type=int, default=200, help='number of epochs to train')
     parser.add_argument('--batch_size', type=int, default=16, help='batch size to train')
@@ -88,13 +89,18 @@ if __name__ == '__main__':
                 collate_fn=custom_collate_fn)
 
     ############################################## model ##############################################
-    if args.model == 'vit':
+    
+    if args.model == 'vis':
+        model = ViS(num_outputs=dataset.num_genes, input_dim=dataset.feature_dim,  
+                            depth=6, nheads=16, 
+                            dimensions_f=64, dimensions_c=64, dimensions_s=64, device=device)
+    elif args.model == 'vit':
         model = ViT(num_outputs=dataset.num_genes,
-                    dim=2048, depth=6, heads=16, mlp_dim=2048, dim_head = 64,
+                    dim=dataset.feature_dim, depth=6, heads=16, mlp_dim=2048, dim_head = 64,
                     device=device)
 
     elif args.model == 'he2rna':
-        model = HE2RNA(input_dim=2048, layers=[256,256],
+        model = HE2RNA(input_dim=dataset.feature_dim, layers=[256,256],
                 ks=[1,2,5,10,20,50,100],
                 output_dim=dataset.num_genes, device=device)
     else:
