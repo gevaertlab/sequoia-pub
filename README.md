@@ -62,12 +62,12 @@ An example script to run the patch extraction: `scripts/extract_resnet_features.
 
 ### Step 3: Obtain k-Means features
 
-The next step once the resnet features have been obtained is to compute the 100 clusters used as input for the vision transformer. They are computed per slide, so it is pretty straightforward, and it is pretty fast. 
+The next step once the resnet/uni features have been obtained is to compute the 100 clusters used as input for the model. They are computed per slide, so it is pretty straightforward, and it is pretty fast. 
 
 An example script to run the patch extraction: `scripts/extract_kmean_features.sh`
 
 - Outputs from Step 2 and Step 3:
-*features* folder, where the features obtained from the WSI using the Resnet and the K-means algorithm later on are stored. They are saved in HDF5 files, and inside there are two datasets: **resnet_features** and **cluster_features**.
+*features* folder, this contains for each WSI a HDF5 file that stores both the features obtained using the resnet/uni (inside the **resnet_features** or **uni_features** dataset) as well as the output from the K-means algorithm (inside **cluster_features** dataset).
 
 Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 

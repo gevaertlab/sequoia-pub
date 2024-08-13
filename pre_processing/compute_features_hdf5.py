@@ -134,7 +134,7 @@ if __name__ == '__main__':
             n_tiles = len(features_tiles)
 
             f_write = h5py.File(os.path.join(path_h5, WSI+'.h5'), "w")
-            dset = f_write.create_dataset("tile_features", data=features_tiles)
+            dset = f_write.create_dataset(f"{args.feat_type}_features", data=features_tiles)
             f_write.close()
 
             with open(os.path.join(path_h5, "complete_tile.txt"), 'w') as f_sum:
