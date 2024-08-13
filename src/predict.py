@@ -19,7 +19,7 @@ import torch.nn as nn
 
 from src.read_data import *
 from src.utils import patient_kfold, grouped_strat_split
-from src.vit_new import ViT, train, evaluate, predict
+from src.vit import ViT, train, evaluate, predict
 from src.he2rna import HE2RNA, he2rna_predict
 
 def custom_collate_fn(batch):

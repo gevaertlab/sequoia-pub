@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import wandb
 
 from src.read_data import *
-from src.vit_new import ViT, train
+from src.vit import ViT, train
 from src.he2rna import HE2RNA, fit
 from src.tformer_lin import ViS 
 

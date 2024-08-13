@@ -8,7 +8,7 @@ click==8.1.7
 contourpy==1.2.1
 cycler==0.12.1
 docker-pycreds==0.4.0
-einops==0.7.0
+einops==0.4.1
 exceptiongroup==1.2.1
 filelock==3.13.4
 fonttools==4.51.0

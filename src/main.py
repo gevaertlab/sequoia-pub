@@ -12,7 +12,7 @@ import random
 
 from src.read_data import *
 from src.utils import patient_kfold, grouped_strat_split
-from src.vit_new import train, ViT, evaluate
+from src.vit import train, ViT, evaluate
 
 def custom_collate_fn(batch):
     """Remove bad entries from the dataloader
