@@ -52,9 +52,11 @@ An example script to run the patch extraction: `scripts/extract_patch.sh`
 
 Note, the ```--start``` and ```--end``` parameters indicate the rows (WSIs) in the *reference.csv* file that need to be extracted. This is useful to execute the script in parallel.
 
-### Step 2: Obtain resnet features
+### Step 2: Obtain resnet/uni features
 
-To obtain resnet features from patches, please use the script `compute_resnet_features_hdf5.py`. The script converts each patch into a linear feature vector. 
+To obtain resnet/uni features from patches, please use the script `compute_features_hdf5.py`. The script converts each patch into a linear feature vector. 
+
+Note: if you use the UNI model, you need to follow the installation procedure in the original [github](https://github.com/mahmoodlab/UNI) and install the necessary [required packages](https://github.com/mahmoodlab/UNI/blob/main/setup.py).
 
 An example script to run the patch extraction: `scripts/extract_resnet_features.sh`
 
