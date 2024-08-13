@@ -98,7 +98,7 @@ For running the benchmarked variations of the architecture:
 
 Pearson correlation and RMSE values are calculated to compare the predicted gene expression values to the ground truth. The significantly well predicted genes are selected using correlation coefficient, p value, rmse, and by statistical comparisons to an untrained model with the same architecture.
 
-Evaluation script: `evaluation/vit_exp_corstats_TCGA.py`
+Evaluation script: `evaluation/evaluate_model.py`. Output: three dataframes `all_genes.csv`: contains evaluation metrics for all genes, `sig_genes.csv`: metrics for only the significant genes and `num_sig_genes.csv` contains the number of significant genes per cancer type with this model.
 
 ## Spatial gene expression predictions
 
