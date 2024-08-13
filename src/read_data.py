@@ -59,19 +59,3 @@ class SuperTileRNADataset(Dataset):
             features = None
 
         return features, rna_data, row['wsi_file_name'], row['tcga_project']
-
-
-def split_train_test_ids(df, test_ids_path):
-    file_parse = np.loadtxt(test_ids_path, dtype=str)
-    test_ids = [x.split('"')[1] for x in file_parse]
-    wsi_file_names = df['wsi_file_name'].values
-
-    test_wsi = []
-    for test_id in test_ids:
-        if test_id in wsi_file_names:
-            test_wsi.append(test_id)
-
-    test_df = df.loc[df['wsi_file_name'].isin(test_wsi)]
-    train_df = df.loc[~df['wsi_file_name'].isin(test_wsi)]
-
-    return train_df, test_df

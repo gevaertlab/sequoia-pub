@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--feature_path', type=str, default="/examples/features", help='path to resnet and clustered features')
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name used to create saved model name')
     parser.add_argument('--log', type=int, default=0, help='whether to log the loss')
-    parser.add_argument('--model', type=str, default='vit', help='model to pretrain, "he2rna" for MLP aggregation, "vit" for transformer aggregation or "vis" for linearized transformer aggregation')
+    parser.add_argument('--model', type=str, default='vis', help='model to pretrain, "he2rna" for MLP aggregation, "vit" for transformer aggregation or "vis" for linearized transformer aggregation')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--num_epochs', type=int, default=200, help='number of epochs to train')
     parser.add_argument('--batch_size', type=int, default=16, help='batch size to train')
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     run = None
     if args.log:
-        run = wandb.init(project="visgene", entity='account_name', config=args, name=args.exp_name)
+        run = wandb.init(project="sequoia", entity='account_name', config=args, name=args.exp_name)
 
     ############################################## prepare data ##############################################
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     optimizer = torch.optim.AdamW(list(model.parameters()), lr=3e-3,weight_decay=0.)
     dataloaders = {'train': dataloader,}
 
-    if args.model == 'vit':
+    if (args.model == 'vis') or (args.model == 'vit'):
         model = train(model, dataloaders, optimizer, num_epochs=args.num_epochs, phases=['train'], save_dir=save_dir, run=run)
     else:
         model = fit(model=model, lr=3e-3, train_loader=dataloaders['train'], valid_loader=None, test_loader=None,
