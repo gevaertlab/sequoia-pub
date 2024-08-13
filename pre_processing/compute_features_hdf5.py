@@ -13,10 +13,8 @@ from PIL import Image
 
 import pdb
 
-from src.wsi_model import *
 from src.read_data import *
 from src.resnet import resnet50
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
