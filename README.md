@@ -11,7 +11,7 @@ _Cancer is a heterogeneous disease requiring precise yet costly genetic profilin
 
 **Overview**
 <p align="center">
-  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview2.png"/>
+  <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview.png"/>
 </p>
 
 ## Fold structure
