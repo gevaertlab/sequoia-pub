@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 56, in <module>
+    np.random.seed(args.seed)
+NameError: name 'np' is not defined

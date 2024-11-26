@@ -1,0 +1,183 @@
+2024-11-26 15:05:07,754 INFO    StreamThr :2988013 [internal.py:wandb_internal():86] W&B internal server running at pid: 2988013, started at: 2024-11-26 15:05:07.753517
+2024-11-26 15:05:07,774 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: status
+2024-11-26 15:05:07,778 INFO    WriterThread:2988013 [datastore.py:open_for_write():87] open: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/run-1r44y788.wandb
+2024-11-26 15:05:07,779 DEBUG   SenderThread:2988013 [sender.py:send():379] send: header
+2024-11-26 15:05:07,781 DEBUG   SenderThread:2988013 [sender.py:send():379] send: run
+2024-11-26 15:05:08,139 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: check_version
+2024-11-26 15:05:08,140 INFO    SenderThread:2988013 [dir_watcher.py:__init__():211] watching files in: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files
+2024-11-26 15:05:08,140 INFO    SenderThread:2988013 [sender.py:_start_run_threads():1124] run started: 1r44y788 with start time 1732633507.755522
+2024-11-26 15:05:08,140 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: check_version
+2024-11-26 15:05:08,195 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: run_start
+2024-11-26 15:05:08,217 DEBUG   HandlerThread:2988013 [system_info.py:__init__():26] System info init
+2024-11-26 15:05:08,217 DEBUG   HandlerThread:2988013 [system_info.py:__init__():41] System info init done
+2024-11-26 15:05:08,217 INFO    HandlerThread:2988013 [system_monitor.py:start():194] Starting system monitor
+2024-11-26 15:05:08,217 INFO    SystemMonitor:2988013 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-11-26 15:05:08,218 INFO    HandlerThread:2988013 [system_monitor.py:probe():214] Collecting system info
+2024-11-26 15:05:08,221 INFO    SystemMonitor:2988013 [interfaces.py:start():190] Started cpu monitoring
+2024-11-26 15:05:08,223 INFO    SystemMonitor:2988013 [interfaces.py:start():190] Started disk monitoring
+2024-11-26 15:05:08,223 INFO    SystemMonitor:2988013 [interfaces.py:start():190] Started gpu monitoring
+2024-11-26 15:05:08,224 INFO    SystemMonitor:2988013 [interfaces.py:start():190] Started memory monitoring
+2024-11-26 15:05:08,224 INFO    SystemMonitor:2988013 [interfaces.py:start():190] Started network monitoring
+2024-11-26 15:05:08,245 DEBUG   HandlerThread:2988013 [system_info.py:probe():150] Probing system
+2024-11-26 15:05:08,249 DEBUG   HandlerThread:2988013 [system_info.py:_probe_git():135] Probing git
+2024-11-26 15:05:08,262 DEBUG   HandlerThread:2988013 [system_info.py:_probe_git():143] Probing git done
+2024-11-26 15:05:08,262 DEBUG   HandlerThread:2988013 [system_info.py:probe():198] Probing system done
+2024-11-26 15:05:08,262 DEBUG   HandlerThread:2988013 [system_monitor.py:probe():223] {'os': 'Linux-4.18.0-372.32.1.el8_6.x86_64-x86_64-with-glibc2.28', 'python': '3.9.20', 'heartbeatAt': '2024-11-26T15:05:08.245527', 'startedAt': '2024-11-26T15:05:07.739788', 'docker': None, 'cuda': None, 'args': ('--model_type', 'vis', '--ref_file', '/scratchc/fmlab/zuberi01/phd/sequoia-pub/examples/matching_rows_sequoia.csv', '--save_dir', 'output', '--cohort', 'TCGA', '--exp_name', 'run_train_split_0', '--batch_size', '16', '--train', '--log', 'histo_to_cnv', '--save_on', 'loss+corr', '--stop_on', 'loss+corr', '--split_column', 'split_0'), 'state': 'running', 'program': '/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py', 'codePathLocal': None, 'git': {'remote': 'https://github.com/rzuberi/sequoia-pub.git', 'commit': '9b3b52be277548a9bc9249d579f68179acbc600e'}, 'email': None, 'root': '/mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub', 'host': 'clust1-cuda-3.cri.camres.org', 'username': 'zuberi01', 'executable': '/Users/zuberi01/miniforge3/envs/sequoia/bin/python3', 'cpu_count': 64, 'cpu_count_logical': 64, 'cpu_freq': {'current': 3152.147890625, 'min': 3200.0, 'max': 3200.0}, 'cpu_freq_per_core': [{'current': 3100.0, 'min': 3200.0, 'max': 3200.0}, {'current': 2347.641, 'min': 3200.0, 'max': 3200.0}, {'current': 3199.997, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 2874.027, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3100.002, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3099.997, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3100.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3003.45, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 1912.351, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}, {'current': 3200.0, 'min': 3200.0, 'max': 3200.0}], 'disk': {'/': {'total': 73.9052734375, 'used': 13.758411407470703}}, 'gpu': 'NVIDIA L40S', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA L40S', 'memory_total': 48305799168}], 'memory': {'total': 503.00318145751953}}
+2024-11-26 15:05:08,262 INFO    HandlerThread:2988013 [system_monitor.py:probe():224] Finished collecting system info
+2024-11-26 15:05:08,262 INFO    HandlerThread:2988013 [system_monitor.py:probe():227] Publishing system info
+2024-11-26 15:05:08,262 DEBUG   HandlerThread:2988013 [system_info.py:_save_conda():207] Saving list of conda packages installed into the current environment
+2024-11-26 15:05:09,178 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_created():271] file/dir created: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/conda-environment.yaml
+2024-11-26 15:05:10,202 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_modified():288] file/dir modified: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/conda-environment.yaml
+2024-11-26 15:05:10,264 DEBUG   HandlerThread:2988013 [system_info.py:_save_conda():222] Saving conda packages done
+2024-11-26 15:05:10,267 INFO    HandlerThread:2988013 [system_monitor.py:probe():229] Finished publishing system info
+2024-11-26 15:05:10,271 DEBUG   SenderThread:2988013 [sender.py:send():379] send: files
+2024-11-26 15:05:10,271 INFO    SenderThread:2988013 [sender.py:_save_file():1390] saving file wandb-metadata.json with policy now
+2024-11-26 15:05:10,363 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: python_packages
+2024-11-26 15:05:10,363 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: python_packages
+2024-11-26 15:05:10,363 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: stop_status
+2024-11-26 15:05:10,365 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: internal_messages
+2024-11-26 15:05:10,367 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: stop_status
+2024-11-26 15:05:10,546 DEBUG   SenderThread:2988013 [sender.py:send():379] send: telemetry
+2024-11-26 15:05:10,550 DEBUG   SenderThread:2988013 [sender.py:send():379] send: exit
+2024-11-26 15:05:10,550 INFO    SenderThread:2988013 [sender.py:send_exit():586] handling exit code: 1
+2024-11-26 15:05:10,550 INFO    SenderThread:2988013 [sender.py:send_exit():588] handling runtime: 2
+2024-11-26 15:05:10,553 INFO    SenderThread:2988013 [sender.py:_save_file():1390] saving file wandb-summary.json with policy end
+2024-11-26 15:05:10,553 INFO    SenderThread:2988013 [sender.py:send_exit():594] send defer
+2024-11-26 15:05:10,553 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,553 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 0
+2024-11-26 15:05:10,554 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,554 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-11-26 15:05:10,554 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 1
+2024-11-26 15:05:10,554 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,554 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 1
+2024-11-26 15:05:10,554 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,554 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-11-26 15:05:10,554 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 2
+2024-11-26 15:05:10,554 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,554 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 2
+2024-11-26 15:05:10,554 INFO    HandlerThread:2988013 [system_monitor.py:finish():203] Stopping system monitor
+2024-11-26 15:05:10,554 DEBUG   SystemMonitor:2988013 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-11-26 15:05:10,554 DEBUG   SystemMonitor:2988013 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-11-26 15:05:10,554 DEBUG   SystemMonitor:2988013 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-11-26 15:05:10,588 INFO    HandlerThread:2988013 [interfaces.py:finish():202] Joined cpu monitor
+2024-11-26 15:05:10,588 INFO    HandlerThread:2988013 [interfaces.py:finish():202] Joined disk monitor
+2024-11-26 15:05:10,644 INFO    HandlerThread:2988013 [interfaces.py:finish():202] Joined gpu monitor
+2024-11-26 15:05:10,644 INFO    HandlerThread:2988013 [interfaces.py:finish():202] Joined memory monitor
+2024-11-26 15:05:10,644 INFO    HandlerThread:2988013 [interfaces.py:finish():202] Joined network monitor
+2024-11-26 15:05:10,645 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,645 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-11-26 15:05:10,645 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 3
+2024-11-26 15:05:10,645 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,646 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 3
+2024-11-26 15:05:10,646 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,646 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-11-26 15:05:10,646 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 4
+2024-11-26 15:05:10,646 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,646 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 4
+2024-11-26 15:05:10,646 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,646 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-11-26 15:05:10,646 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 5
+2024-11-26 15:05:10,646 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,646 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 5
+2024-11-26 15:05:10,646 DEBUG   SenderThread:2988013 [sender.py:send():379] send: summary
+2024-11-26 15:05:10,648 INFO    SenderThread:2988013 [sender.py:_save_file():1390] saving file wandb-summary.json with policy end
+2024-11-26 15:05:10,649 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,649 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-11-26 15:05:10,649 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 6
+2024-11-26 15:05:10,649 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,649 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 6
+2024-11-26 15:05:10,649 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,649 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-11-26 15:05:10,653 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: status_report
+2024-11-26 15:05:10,812 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 7
+2024-11-26 15:05:10,812 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:10,812 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 7
+2024-11-26 15:05:10,812 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:10,812 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-11-26 15:05:10,830 INFO    wandb-upload_0:2988013 [upload_job.py:push():131] Uploaded file /tmp/tmp3f7opbx3wandb/xktgwnoe-wandb-metadata.json
+2024-11-26 15:05:11,205 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_modified():288] file/dir modified: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/config.yaml
+2024-11-26 15:05:11,205 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_created():271] file/dir created: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/wandb-summary.json
+2024-11-26 15:05:11,206 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_created():271] file/dir created: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/wandb-metadata.json
+2024-11-26 15:05:11,206 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_created():271] file/dir created: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/output.log
+2024-11-26 15:05:11,207 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_created():271] file/dir created: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/requirements.txt
+2024-11-26 15:05:11,449 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: poll_exit
+2024-11-26 15:05:13,207 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_modified():288] file/dir modified: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/output.log
+2024-11-26 15:05:14,561 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 8
+2024-11-26 15:05:14,561 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: poll_exit
+2024-11-26 15:05:14,562 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:14,562 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 8
+2024-11-26 15:05:14,563 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:14,563 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-11-26 15:05:14,563 INFO    SenderThread:2988013 [job_builder.py:build():318] Attempting to build job artifact
+2024-11-26 15:05:14,564 INFO    SenderThread:2988013 [job_builder.py:_get_source_type():455] is repo sourced job
+2024-11-26 15:05:14,564 WARNING SenderThread:2988013 [job_builder.py:_log_if_verbose():210] No program path found, not creating job artifact. See https://docs.wandb.ai/guides/launch/create-job
+2024-11-26 15:05:14,564 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 9
+2024-11-26 15:05:14,565 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:14,565 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 9
+2024-11-26 15:05:14,565 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:14,565 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-11-26 15:05:14,565 INFO    SenderThread:2988013 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-11-26 15:05:15,208 INFO    Thread-12 :2988013 [dir_watcher.py:_on_file_modified():288] file/dir modified: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/output.log
+2024-11-26 15:05:15,209 INFO    SenderThread:2988013 [dir_watcher.py:finish():388] scan: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files
+2024-11-26 15:05:15,210 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/requirements.txt requirements.txt
+2024-11-26 15:05:15,210 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/wandb-metadata.json wandb-metadata.json
+2024-11-26 15:05:15,211 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/output.log output.log
+2024-11-26 15:05:15,211 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/wandb-summary.json wandb-summary.json
+2024-11-26 15:05:15,211 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/config.yaml config.yaml
+2024-11-26 15:05:15,212 INFO    SenderThread:2988013 [dir_watcher.py:finish():402] scan save: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/conda-environment.yaml conda-environment.yaml
+2024-11-26 15:05:15,212 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 10
+2024-11-26 15:05:15,213 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:15,213 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 10
+2024-11-26 15:05:15,219 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:15,219 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-11-26 15:05:15,219 INFO    SenderThread:2988013 [file_pusher.py:finish():172] shutting down file pusher
+2024-11-26 15:05:15,451 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: poll_exit
+2024-11-26 15:05:15,452 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: poll_exit
+2024-11-26 15:05:15,579 INFO    wandb-upload_1:2988013 [upload_job.py:push():131] Uploaded file /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/output.log
+2024-11-26 15:05:15,623 INFO    wandb-upload_0:2988013 [upload_job.py:push():131] Uploaded file /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/requirements.txt
+2024-11-26 15:05:15,755 INFO    wandb-upload_2:2988013 [upload_job.py:push():131] Uploaded file /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/wandb-summary.json
+2024-11-26 15:05:15,764 INFO    wandb-upload_3:2988013 [upload_job.py:push():131] Uploaded file /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/config.yaml
+2024-11-26 15:05:15,787 INFO    wandb-upload_4:2988013 [upload_job.py:push():131] Uploaded file /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/files/conda-environment.yaml
+2024-11-26 15:05:15,988 INFO    Thread-11 :2988013 [sender.py:transition_state():614] send defer: 11
+2024-11-26 15:05:15,989 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:15,989 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 11
+2024-11-26 15:05:15,989 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:15,989 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-11-26 15:05:15,989 INFO    SenderThread:2988013 [file_pusher.py:join():178] waiting for file pusher
+2024-11-26 15:05:15,990 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 12
+2024-11-26 15:05:15,990 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:15,990 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 12
+2024-11-26 15:05:15,991 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:15,991 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-11-26 15:05:15,991 INFO    SenderThread:2988013 [file_stream.py:finish():614] file stream finish called
+2024-11-26 15:05:16,125 INFO    SenderThread:2988013 [file_stream.py:finish():618] file stream finish is done
+2024-11-26 15:05:16,126 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 13
+2024-11-26 15:05:16,126 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:16,126 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 13
+2024-11-26 15:05:16,126 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:16,127 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-11-26 15:05:16,127 INFO    SenderThread:2988013 [sender.py:transition_state():614] send defer: 14
+2024-11-26 15:05:16,127 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: defer
+2024-11-26 15:05:16,127 INFO    HandlerThread:2988013 [handler.py:handle_request_defer():172] handle defer: 14
+2024-11-26 15:05:16,128 DEBUG   SenderThread:2988013 [sender.py:send():379] send: final
+2024-11-26 15:05:16,128 DEBUG   SenderThread:2988013 [sender.py:send():379] send: footer
+2024-11-26 15:05:16,128 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: defer
+2024-11-26 15:05:16,128 INFO    SenderThread:2988013 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-11-26 15:05:16,130 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: poll_exit
+2024-11-26 15:05:16,130 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: poll_exit
+2024-11-26 15:05:16,130 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: server_info
+2024-11-26 15:05:16,131 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: get_summary
+2024-11-26 15:05:16,131 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: sampled_history
+2024-11-26 15:05:16,131 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: internal_messages
+2024-11-26 15:05:16,132 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: poll_exit
+2024-11-26 15:05:16,132 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: poll_exit
+2024-11-26 15:05:16,132 DEBUG   SenderThread:2988013 [sender.py:send_request():406] send_request: server_info
+2024-11-26 15:05:16,279 INFO    MainThread:2988013 [wandb_run.py:_footer_history_summary_info():3936] rendering history
+2024-11-26 15:05:16,280 INFO    MainThread:2988013 [wandb_run.py:_footer_history_summary_info():3968] rendering summary
+2024-11-26 15:05:16,280 INFO    MainThread:2988013 [wandb_run.py:_footer_sync_info():3895] logging synced files
+2024-11-26 15:05:16,281 DEBUG   HandlerThread:2988013 [handler.py:handle_request():146] handle_request: shutdown
+2024-11-26 15:05:16,281 INFO    HandlerThread:2988013 [handler.py:finish():866] shutting down handler
+2024-11-26 15:05:17,132 INFO    WriterThread:2988013 [datastore.py:close():296] close: /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150507-1r44y788/run-1r44y788.wandb
+2024-11-26 15:05:17,279 INFO    SenderThread:2988013 [sender.py:finish():1546] shutting down sender
+2024-11-26 15:05:17,279 INFO    SenderThread:2988013 [file_pusher.py:finish():172] shutting down file pusher
+2024-11-26 15:05:17,280 INFO    SenderThread:2988013 [file_pusher.py:join():178] waiting for file pusher

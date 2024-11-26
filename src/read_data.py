@@ -10,10 +10,12 @@ import h5py
 
 
 class SuperTileRNADataset(Dataset):
-    def __init__(self, csv_path: str, features_path, quick=None):
+    def __init__(self, csv_path: str, features_path, feature_use, rna_prefix='rna_', quick=None):
         self.csv_path = csv_path
         self.quick = quick
         self.features_path = features_path
+        self.feature_use = feature_use
+        self.rna_prefix = rna_prefix
         if type(csv_path) == str:
             self.data = pd.read_csv(csv_path)
         else:
@@ -21,12 +23,12 @@ class SuperTileRNADataset(Dataset):
 
         # find the number of genes
         row = self.data.iloc[0]
-        rna_data = row[[x for x in row.keys() if 'rna_' in x]].values.astype(np.float32)
+        rna_data = row[[x for x in row.keys() if self.rna_prefix in x]].values.astype(np.float32)
         self.num_genes = len(rna_data)
 
         # find the feature dimension, assume all images in the reference file have the same dimension
-        path = os.path.join(self.features_path, row['tcga_project'], 
-                            row['wsi_file_name'], row['wsi_file_name']+'.h5')
+        #path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'], row['wsi_file_name']+'.h5')
+        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi'))
         f = h5py.File(path, 'r')
         features = f[self.feature_use][:]
         self.feature_dim = features.shape[1]
@@ -37,15 +39,15 @@ class SuperTileRNADataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.iloc[idx]
-        path = os.path.join(self.features_path, row['tcga_project'],
-                            row['wsi_file_name'], row['wsi_file_name']+'.h5')
-        rna_data = row[[x for x in row.keys() if 'rna_' in x]].values.astype(np.float32)
+        #path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'], row['wsi_file_name']+'.h5')
+        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi'))
+        rna_data = row[[x for x in row.keys() if self.rna_prefix in x]].values.astype(np.float32)
         rna_data = torch.tensor(rna_data, dtype=torch.float32)
         try:
             if 'GTEX' not in path:
                 path = path.replace('.svs','')
             f = h5py.File(path, 'r')
-            features = f['cluster_features'][:]
+            features = f[self.feature_use][:]
             f.close()
             features = torch.tensor(features, dtype=torch.float32)
         except Exception as e:

@@ -1,0 +1,17 @@
+wandb: Currently logged in as: rehanzuberi (rzuberi). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.18.7 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150154-oz7v5ddp
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run run_train_split_0
+wandb: ⭐️ View project at https://wandb.ai/rzuberi/histo_to_cnv
+wandb: 🚀 View run at https://wandb.ai/rzuberi/histo_to_cnv/runs/oz7v5ddp
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 99, in <module>
+    df = filter_no_features(df, feature_path=args.feature_path, feature_column='cluster_features')
+TypeError: filter_no_features() got an unexpected keyword argument 'feature_column'
+wandb: - 0.008 MB of 0.008 MB uploadedwandb: \ 0.016 MB of 0.016 MB uploadedwandb: 🚀 View run run_train_split_0 at: https://wandb.ai/rzuberi/histo_to_cnv/runs/oz7v5ddp
+wandb: ⭐️ View project at: https://wandb.ai/rzuberi/histo_to_cnv
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20241126_150154-oz7v5ddp/logs

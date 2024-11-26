@@ -1,0 +1,106 @@
+wandb_version: 1
+
+src_path:
+  desc: null
+  value: ''
+ref_file:
+  desc: null
+  value: /scratchc/fmlab/zuberi01/phd/sequoia-pub/examples/matching_rows_sequoia.csv
+sample_percent:
+  desc: null
+  value: null
+tcga_projects:
+  desc: null
+  value: null
+feature_path:
+  desc: null
+  value: features/
+save_dir:
+  desc: null
+  value: output
+cohort:
+  desc: null
+  value: TCGA
+exp_name:
+  desc: null
+  value: run_train_split_0
+filter_no_features:
+  desc: null
+  value: 1
+log:
+  desc: null
+  value: histo_to_cnv
+split_column:
+  desc: null
+  value: split_0
+model_type:
+  desc: null
+  value: vis
+depth:
+  desc: null
+  value: 6
+num_heads:
+  desc: null
+  value: 16
+seed:
+  desc: null
+  value: 99
+lr:
+  desc: null
+  value: 0.001
+batch_size:
+  desc: null
+  value: 16
+checkpoint:
+  desc: null
+  value: null
+train:
+  desc: null
+  value: true
+num_epochs:
+  desc: null
+  value: 200
+change_num_genes:
+  desc: null
+  value: 0
+num_genes:
+  desc: null
+  value: null
+k:
+  desc: null
+  value: 5
+save_on:
+  desc: null
+  value: loss+corr
+stop_on:
+  desc: null
+  value: loss+corr
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.20
+    cli_version: 0.16.6
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1732633507.0
+    t:
+      1:
+      - 1
+      - 5
+      - 53
+      - 55
+      2:
+      - 1
+      - 5
+      - 53
+      - 55
+      3:
+      - 13
+      - 16
+      - 23
+      4: 3.9.20
+      5: 0.16.6
+      8:
+      - 5
+      13: linux-x86_64

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 15, in <module>
+    from vit import train, ViT, evaluate
+  File "/mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/vit.py", line 12, in <module>
+    from src.he2rna import compute_correlations
+ModuleNotFoundError: No module named 'src'

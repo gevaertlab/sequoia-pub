@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 59, in <module>
+    torch.manual_seed(args.seed)
+NameError: name 'torch' is not defined

@@ -1,0 +1,6 @@
+
+cuda:0
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 99, in <module>
+    df = filter_no_features(df, feature_path=args.feature_path, feature_column='cluster_features')
+TypeError: filter_no_features() got an unexpected keyword argument 'feature_column'

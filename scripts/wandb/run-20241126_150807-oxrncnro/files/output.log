@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'tcga_project'
+The above exception was the direct cause of the following exception:
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 118, in <module>
+    train_dataset = SuperTileRNADataset(train_df, args.feature_path)
+  File "/mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/read_data.py", line 28, in __init__
+    path = os.path.join(self.features_path, row['tcga_project'],
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/series.py", line 1121, in __getitem__
+    return self._get_value(key)
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/series.py", line 1237, in _get_value
+    loc = self.index.get_loc(label)
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'tcga_project'
+cuda:0

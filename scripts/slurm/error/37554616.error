@@ -1,0 +1,36 @@
+wandb: Currently logged in as: rehanzuberi (rzuberi). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.18.7 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.6
+wandb: Run data is saved locally in /mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/wandb/run-20241126_150807-oxrncnro
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run run_train_split_0
+wandb: ⭐️ View project at https://wandb.ai/rzuberi/histo_to_cnv
+wandb: 🚀 View run at https://wandb.ai/rzuberi/histo_to_cnv/runs/oxrncnro
+Traceback (most recent call last):
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/indexes/base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'tcga_project'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main.py", line 118, in <module>
+    train_dataset = SuperTileRNADataset(train_df, args.feature_path)
+  File "/mnt/scratchc/fmlab/zuberi01/phd/sequoia-pub/src/read_data.py", line 28, in __init__
+    path = os.path.join(self.features_path, row['tcga_project'],
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/series.py", line 1121, in __getitem__
+    return self._get_value(key)
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/series.py", line 1237, in _get_value
+    loc = self.index.get_loc(label)
+  File "/Users/zuberi01/miniforge3/envs/sequoia/lib/python3.9/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'tcga_project'
+wandb: - 0.008 MB of 0.008 MB uploadedwandb: \ 0.017 MB of 0.017 MB uploadedwandb: 🚀 View run run_train_split_0 at: https://wandb.ai/rzuberi/histo_to_cnv/runs/oxrncnro
+wandb: ⭐️ View project at: https://wandb.ai/rzuberi/histo_to_cnv
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20241126_150807-oxrncnro/logs

@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 from tqdm import tqdm
 import pickle
@@ -15,6 +16,10 @@ from utils import patient_kfold, filter_no_features, custom_collate_fn
 from vit import train, ViT, evaluate
 from tformer_lin import ViS
 
+import numpy as np
+import pandas as pd
+import torch
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
@@ -30,7 +35,9 @@ if __name__ == '__main__':
     parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name for creating the saving folder of the results')
     parser.add_argument('--filter_no_features', type=int, default=1, help='Whether to filter out samples with no features')
     parser.add_argument('--log', type=str, help='Experiment name to log')
-    
+    parser.add_argument('--split_column', type=str, default=None, help='Column name in ref_file.csv to use for predefined splits (e.g., split_0, split_1).')
+    parser.add_argument('--rna_prefix', type=str, default='rna_', help='Prefix for RNA columns in the reference file.')
+
     # model args
     parser.add_argument('--model_type', type=str, default='vit', help='"vit" for transformer or "vis" for linearized transformer')
     parser.add_argument('--depth', type=int, default=6, help='transformer depth')
@@ -79,141 +86,165 @@ if __name__ == '__main__':
     print(device)
 
     ############################################## data prep ##############################################
-    
+
     df = pd.read_csv(args.ref_file)
-    if args.sample_percent != None:
+    if args.sample_percent is not None:
         df = df.sample(frac=args.sample_percent).reset_index(drop=True)
 
-    if ('tcga_project' in df.columns) and (args.tcga_projects != None):
+    if ('tcga_project' in df.columns) and (args.tcga_projects is not None):
         projects = args.tcga_projects.split(',')
         df = df[df['tcga_project'].isin(projects)].reset_index(drop=True)
         print(f'Filtered project {projects}')
 
     if args.filter_no_features:
-        df = filter_no_features(df, feature_path=args.feature_path, 'cluster_features')
-    
-    ############################################## kfold ##############################################
-    train_idxs, val_idxs, test_idxs = patient_kfold(df, n_splits=args.k)
+        df = filter_no_features(df, feature_path=args.feature_path)
 
-    test_results_splits = {}
-    i = 0
-
-    for train_idx, val_idx, test_idx in zip(train_idxs, val_idxs, test_idxs):
-        train_df = df.iloc[train_idx]
-        val_df = df.iloc[val_idx]
-        test_df = df.iloc[test_idx]
-
-        # save patient ids to file
-        np.save(save_dir + '/train_'+str(i)+'.npy', np.unique(train_df.patient_id) )
-        np.save(save_dir + '/val_'+str(i)+'.npy', np.unique(val_df.patient_id) )
-        np.save(save_dir + '/test_'+str(i)+'.npy', np.unique(test_df.patient_id) )
+    # Splitting the dataset
+    if args.split_column:
+        if args.split_column not in df.columns:
+            raise ValueError(f"The specified split_column '{args.split_column}' does not exist in the reference file.")
         
-        # init dataset
-        train_dataset = SuperTileRNADataset(train_df, args.feature_path)
-        val_dataset = SuperTileRNADataset(val_df, args.feature_path)
-        test_dataset = SuperTileRNADataset(test_df, args.feature_path)
+        train_df = df[df[args.split_column] == 'train'].reset_index(drop=True)
+        val_df = df[df[args.split_column] == 'val'].reset_index(drop=True)
+        test_df = df[df[args.split_column] == 'test'].reset_index(drop=True)
+    else:
+        train_idxs, val_idxs, test_idxs = patient_kfold(df, n_splits=args.k)
+        i = 0
+        train_df = df.iloc[train_idxs[0]]
+        val_df = df.iloc[val_idxs[0]]
+        test_df = df.iloc[test_idxs[0]]
+        print(f"K-fold splitting used: split index {i}")
 
-        num_outputs = train_dataset.num_genes 
-        feature_dim = train_dataset.feature_dim
+    # Dataset initialization (shared for both branches)
+    train_dataset = SuperTileRNADataset(train_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
+    val_dataset = SuperTileRNADataset(val_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
+    test_dataset = SuperTileRNADataset(test_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
 
-        # init dataloaders
-        train_dataloader = DataLoader(train_dataset, 
-                    num_workers=0, pin_memory=True, 
-                    shuffle=shuffle, batch_size=args.batch_size,
-                    collate_fn=custom_collate_fn,
-                    worker_init_fn=seed_worker,
-                    generator=g)
-        
-        val_dataloader = DataLoader(val_dataset, 
-                    num_workers=0, pin_memory=True, 
-                    shuffle=True, batch_size=args.batch_size,
-                    collate_fn=custom_collate_fn)
-        
-        test_dataloader = DataLoader(test_dataset, 
-                    num_workers=0, pin_memory=True, 
-                    shuffle=False, batch_size=args.batch_size,
-                    collate_fn=custom_collate_fn)
-        
-        # get model
-        if args.checkpoint and args.change_num_genes: # if finetuning from model trained on gtex
-            model_path = os.path.join(args.checkpoint)
-            if args.model_type == 'vit':
-                model = ViT(num_outputs=args.change_num_genes, dim=feature_dim, 
-                            depth=args.depth, heads=args.num_heads, 
-                            mlp_dim=2048, dim_head=64, device=device) 
-            elif args.model_type == 'vis':
-                model = ViS(num_outputs=args.change_num_genes, input_dim=feature_dim,  
-                            depth=args.depth, nheads=args.num_heads, 
-                            dimensions_f=64, dimensions_c=64, dimensions_s=64, device=device)
-            else:
-                print('please specify correct model type "vit" or "vis"')
-                exit()
-                
-            model.load_state_dict(torch.load(model_path, map_location = device))
-            print(f'Loaded model from {model_path}')
+    # Extract dataset properties
+    num_outputs = train_dataset.num_genes
+    feature_dim = train_dataset.feature_dim
 
-            model.linear_head = nn.Sequential(
-                nn.LayerNorm(feature_dim),
-                nn.Linear(feature_dim, num_outputs))
+    # Dataloader initialization (shared for both branches)
+    train_dataloader = DataLoader(
+        train_dataset,
+        num_workers=0,
+        pin_memory=True,
+        shuffle=True,  # Always shuffle during training
+        batch_size=args.batch_size,
+        collate_fn=custom_collate_fn,
+        worker_init_fn=seed_worker,
+        generator=g,
+    )
 
-        else: # if training from scratch or continuing training same model (then load state dict in next if)
-            if args.model_type == 'vit':
-                model = ViT(num_outputs=num_outputs, dim=feature_dim, 
-                            depth=args.depth, heads=args.num_heads, 
-                            mlp_dim=2048, dim_head=64, device=device) 
-            elif args.model_type == 'vis':
-                model = ViS(num_outputs=num_outputs, input_dim=feature_dim, 
-                            depth=args.depth, nheads=args.num_heads, 
-                            dimensions_f=64, dimensions_c=64, dimensions_s=64, device=device)
-            else:
-                print('please specify correct model type "vit" or "vis"')
+    val_dataloader = DataLoader(
+        val_dataset,
+        num_workers=0,
+        pin_memory=True,
+        shuffle=True,  # Shuffle for validation (optional, depends on your workflow)
+        batch_size=args.batch_size,
+        collate_fn=custom_collate_fn,
+    )
 
-        if args.checkpoint and not args.change_num_genes:
-            suff = f'_{i}' if i > 0 else ''
-            model_path = args.checkpoint + f'model_best{suff}.pt'
-            print(f'Loading model from {model_path}')
-            model.load_state_dict(torch.load(model_path, map_location=device))
+    test_dataloader = DataLoader(
+        test_dataset,
+        num_workers=0,
+        pin_memory=True,
+        shuffle=False,  # Never shuffle during testing
+        batch_size=args.batch_size,
+        collate_fn=custom_collate_fn,
+    )
 
-        model.to(device)
+    # Model training and evaluation (shared for both branches)
+    model_path = os.path.join(args.checkpoint) if args.checkpoint else None
 
-        # training 
-        optimizer = torch.optim.AdamW(list(model.parameters()), 
-                                        lr=args.lr, 
-                                        amsgrad=False,
-                                        weight_decay=0.)
-        dataloaders = { 'train': train_dataloader, 'val': val_dataloader}
-        
-        if args.train:
-            model = train(model, dataloaders, optimizer, 
-                            num_epochs=args.num_epochs, run=run,split=i, 
-                            save_on=args.save_on, stop_on=args.stop_on, 
-                            delta=0.5, save_dir=save_dir)
-
-        preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff='_'+str(i))
-
-        # get random model predictions
+    if args.checkpoint and args.change_num_genes:  # Load model for fine-tuning
         if args.model_type == 'vit':
-            random_model = ViT(num_outputs=num_outputs, dim=feature_dim, 
-                                depth=args.depth, heads=args.num_heads, 
-                                mlp_dim=2048, dim_head = 64, device = device)  
+            model = ViT(
+                num_outputs=args.change_num_genes,
+                dim=feature_dim,
+                depth=args.depth,
+                heads=args.num_heads,
+                mlp_dim=2048,
+                dim_head=64,
+                device=device,
+            )
+        elif args.model_type == 'vis':
+            model = ViS(
+                num_outputs=args.change_num_genes,
+                input_dim=feature_dim,
+                depth=args.depth,
+                nheads=args.num_heads,
+                dimensions_f=64,
+                dimensions_c=64,
+                dimensions_s=64,
+                device=device,
+            )
         else:
-            random_model = ViS(num_outputs=num_outputs, input_dim=feature_dim, 
-                            depth=args.depth, nheads=args.num_heads,  
-                            dimensions_f=64, dimensions_c=64, dimensions_s=64, device=device)
-        random_model = random_model.to(device)
-        random_preds, _, _, _ = evaluate(random_model, test_dataloader, run=run, suff='_'+str(i)+'_rand')
-        
-        test_results = {
-            'real': real,
-            'preds': preds,
-            'random': random_preds,
-            'wsi_file_name': wsis,
-            'tcga_project': projs
-        }
-        
-        test_results_splits[f'split_{i}'] = test_results
-        i += 1
+            raise ValueError('Please specify a correct model type: "vit" or "vis"')
 
-    test_results_splits['genes'] = [x[4:] for x in df.columns if 'rna_' in x]
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        model.linear_head = nn.Sequential(
+            nn.LayerNorm(feature_dim),
+            nn.Linear(feature_dim, num_outputs),
+        )
+    else:  # Train from scratch or continue training
+        if args.model_type == 'vit':
+            model = ViT(
+                num_outputs=num_outputs,
+                dim=feature_dim,
+                depth=args.depth,
+                heads=args.num_heads,
+                mlp_dim=2048,
+                dim_head=64,
+                device=device,
+            )
+        elif args.model_type == 'vis':
+            model = ViS(
+                num_outputs=num_outputs,
+                input_dim=feature_dim,
+                depth=args.depth,
+                nheads=args.num_heads,
+                dimensions_f=64,
+                dimensions_c=64,
+                dimensions_s=64,
+                device=device,
+            )
+        else:
+            raise ValueError('Please specify a correct model type: "vit" or "vis"')
+
+    model.to(device)
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=args.lr,
+        amsgrad=False,
+        weight_decay=0.0,
+    )
+    dataloaders = {"train": train_dataloader, "val": val_dataloader}
+
+    if args.train:
+        model = train(
+            model,
+            dataloaders,
+            optimizer,
+            num_epochs=args.num_epochs,
+            run=run,
+            save_on=args.save_on,
+            stop_on=args.stop_on,
+            delta=0.5,
+            save_dir=save_dir,
+        )
+
+    preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff="")
+
+    test_results_splits = {
+        "real": real,
+        "preds": preds,
+        "random": None,  # Add random predictions if required
+        "wsi_file_name": wsis,
+        "tcga_project": projs,
+        "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+    }
+
     with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
         pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
