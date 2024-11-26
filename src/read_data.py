@@ -28,7 +28,7 @@ class SuperTileRNADataset(Dataset):
 
         # find the feature dimension, assume all images in the reference file have the same dimension
         #path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'], row['wsi_file_name']+'.h5')
-        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi'))
+        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi')+'.h5')
         f = h5py.File(path, 'r')
         features = f[self.feature_use][:]
         self.feature_dim = features.shape[1]
@@ -40,7 +40,7 @@ class SuperTileRNADataset(Dataset):
     def __getitem__(self, idx):
         row = self.data.iloc[idx]
         #path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'], row['wsi_file_name']+'.h5')
-        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi'))
+        path = os.path.join(self.features_path, row['tcga_project'], row['wsi_file_name'].removesuffix('.ndpi')+'.h5')
         rna_data = row[[x for x in row.keys() if self.rna_prefix in x]].values.astype(np.float32)
         rna_data = torch.tensor(rna_data, dtype=torch.float32)
         try:
