@@ -189,9 +189,13 @@ def train(model, dataloaders, optimizer, accelerator=None,
                 suffix = ''
 
             if run:
-                run.log({'epoch': epoch, f'score {phase}{suffix} {split}': scores[phase]})
-                run.log({'epoch': epoch, f'{phase}{suffix} loss fold {split}': losses[phase]})
-                run.log({'epoch': epoch, f'{phase}{suffix} mae fold {split}': maes[phase]})
+                metrics = {
+                    'epoch': epoch,
+                    f'score {phase}{suffix} {split}': scores[phase],
+                    f'{phase}{suffix} loss fold {split}': losses[phase],
+                    f'{phase}{suffix} mae fold {split}': maes[phase]
+                }
+                run.log(metrics)
 
             if verbose:
                 print(f'Epoch {epoch}: {phase} loss {losses[phase]} mae {maes[phase]}')

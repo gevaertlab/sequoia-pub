@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('--k', type=int, default=5, help='Number of splits')
     parser.add_argument('--save_on', type=str, default='loss', help='which criterium to save model on, "loss" or "loss+corr"')
     parser.add_argument('--stop_on', type=str, default='loss', help='which criterium to do early stopping on, "loss" or "loss+corr"')
-
+ 
     args = parser.parse_args()
     
     ############################################## seeds ##############################################
@@ -116,9 +116,9 @@ if __name__ == '__main__':
         print(f"K-fold splitting used: split index {i}")
 
     # Dataset initialization (shared for both branches)
-    train_dataset = SuperTileRNADataset(train_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
-    val_dataset = SuperTileRNADataset(val_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
-    test_dataset = SuperTileRNADataset(test_df, args.feature_path, feature_use='features', rna_prefix=args.rna_prefix)
+    train_dataset = SuperTileRNADataset(train_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
+    val_dataset = SuperTileRNADataset(val_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
+    test_dataset = SuperTileRNADataset(test_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
 
     # Extract dataset properties
     num_outputs = train_dataset.num_genes

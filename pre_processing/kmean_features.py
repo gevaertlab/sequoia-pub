@@ -8,10 +8,18 @@ import numpy as np
 import h5py
 from sklearn.cluster import KMeans
 
-from src.read_data import *
-from src.utils import exists
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from read_data import *
+
+
+#from src.read_data import *
+#from src.utils import exists
+
 
 if __name__ == '__main__':
+    
     parser = argparse.ArgumentParser(description='Getting features')
     parser.add_argument('--ref_file', default="/examples/ref_file.csv", type=str, required=True, help='Path with reference csv file')
     parser.add_argument('--patch_data_path', default="/examples/Patches_hdf5", type=str, required=True, help='Directory where the patch is saved')
@@ -30,6 +38,8 @@ if __name__ == '__main__':
                         help='GTex tissue being used')
     parser.add_argument('--seed', type=int, default=99,
         help='Seed for random generation')
+    parser.add_argument('--feature_name', type=str, default='resnet_features',
+                        help='Name of the feature in the h5 file')
 
     args = parser.parse_args()
 
@@ -52,6 +62,9 @@ if __name__ == '__main__':
 
     print(f'Total number of slides = {df.shape[0]}')
 
+    def exists(variable):
+        return variable is not None
+
     # indexing based on values for parallelization
     if exists(args.start) and exists(args.end):
         df = df.iloc[args.start:args.end]
@@ -70,14 +83,20 @@ if __name__ == '__main__':
             project = df.iloc[0]['tcga_project']
             WSI = WSI.replace('.svs', '')
 
-        path = os.path.join(args.feature_path, project, WSI)
+        #path = os.path.join(args.feature_path, project, WSI)
+        path = os.path.join(args.feature_path, project)
+        # if there's '.ndpi' in the name, remove it
+        if '.ndpi' in WSI:
+            WSI = WSI.replace('.ndpi', '')
         try:
+            print(os.path.join(path,WSI+'.h5'))
             f = h5py.File(os.path.join(path,WSI+'.h5'), "r+")
         except:
             print(f'Cannot open file {path}')
             continue
         try:
-            features = f['resnet_features']
+            #features = f['resnet_features']
+            features = f[args.feature_name]
         except:
             print(f'No resnet features for {path}')
             f.close()
