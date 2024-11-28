@@ -1,3 +1,5 @@
+# main.py
+
 import os
 import sys
 import argparse
@@ -9,7 +11,7 @@ import random
 
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
+from sklearn.metrics import accuracy_score, recall_score, roc_auc_score
 
 from read_data import SuperTileRNADataset
 from utils import patient_kfold, filter_no_features, custom_collate_fn
@@ -20,11 +22,10 @@ import numpy as np
 import pandas as pd
 import torch
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
 
-    # general args
+    # General args
     parser.add_argument('--src_path', type=str, default='', help='project path')
     parser.add_argument('--ref_file', type=str, default=None, help='path to reference file')
     parser.add_argument('--sample-percent', type=float, default=None, help='Downsample available data to test the effect of having a smaller dataset. If None, no downsampling.')
@@ -37,8 +38,9 @@ if __name__ == '__main__':
     parser.add_argument('--log', type=str, help='Experiment name to log')
     parser.add_argument('--split_column', type=str, default=None, help='Column name in ref_file.csv to use for predefined splits (e.g., split_0, split_1).')
     parser.add_argument('--rna_prefix', type=str, default='rna_', help='Prefix for RNA columns in the reference file.')
+    parser.add_argument('--eval', help="if you want to evaluate the model", action="store_true")
 
-    # model args
+    # Model args
     parser.add_argument('--model_type', type=str, default='vit', help='"vit" for transformer or "vis" for linearized transformer')
     parser.add_argument('--depth', type=int, default=6, help='transformer depth')
     parser.add_argument('--num-heads', type=int, default=16, help='number of attention heads')
@@ -56,15 +58,15 @@ if __name__ == '__main__':
  
     args = parser.parse_args()
     
-    ############################################## seeds ##############################################
+    ############################################## Seeds ##############################################
     
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     random.seed(args.seed)
-    torch.backends.cudnn.benchmark = False # possibly reduced performance but better reproducibility
+    torch.backends.cudnn.benchmark = False  # Possibly reduced performance but better reproducibility
     torch.backends.cudnn.deterministic = True
 
-    # reproducibility train dataloader
+    # Reproducibility train dataloader
     def seed_worker(worker_id):
         worker_seed = torch.initial_seed() % 2**32
         np.random.seed(worker_seed)
@@ -72,7 +74,7 @@ if __name__ == '__main__':
     g = torch.Generator()
     g.manual_seed(0)
 
-    ############################################## logging ##############################################
+    ############################################## Logging ##############################################
     
     save_dir = os.path.join(args.src_path, args.save_dir, args.cohort, args.exp_name)
     if not os.path.exists(save_dir):
@@ -85,7 +87,7 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     print(device)
 
-    ############################################## data prep ##############################################
+    ############################################## Data Preparation ##############################################
 
     df = pd.read_csv(args.ref_file)
     if args.sample_percent is not None:
@@ -115,7 +117,7 @@ if __name__ == '__main__':
         test_df = df.iloc[test_idxs[0]]
         print(f"K-fold splitting used: split index {i}")
 
-    # Dataset initialization (shared for both branches)
+    # Dataset initialization
     train_dataset = SuperTileRNADataset(train_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
     val_dataset = SuperTileRNADataset(val_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
     test_dataset = SuperTileRNADataset(test_df, args.feature_path, feature_use='cluster_features', rna_prefix=args.rna_prefix)
@@ -124,7 +126,7 @@ if __name__ == '__main__':
     num_outputs = train_dataset.num_genes
     feature_dim = train_dataset.feature_dim
 
-    # Dataloader initialization (shared for both branches)
+    # Dataloader initialization
     train_dataloader = DataLoader(
         train_dataset,
         num_workers=0,
@@ -140,7 +142,7 @@ if __name__ == '__main__':
         val_dataset,
         num_workers=0,
         pin_memory=True,
-        shuffle=True,  # Shuffle for validation (optional, depends on your workflow)
+        shuffle=False,  # Do not shuffle validation data
         batch_size=args.batch_size,
         collate_fn=custom_collate_fn,
     )
@@ -154,7 +156,7 @@ if __name__ == '__main__':
         collate_fn=custom_collate_fn,
     )
 
-    # Model training and evaluation (shared for both branches)
+    # Model initialization
     model_path = os.path.join(args.checkpoint) if args.checkpoint else None
 
     if args.checkpoint and args.change_num_genes:  # Load model for fine-tuning
@@ -187,6 +189,32 @@ if __name__ == '__main__':
             nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, num_outputs),
         )
+    elif args.checkpoint and args.eval:  # Load model for evaluation
+        if args.model_type == 'vit':
+            model = ViT(
+                num_outputs=num_outputs,
+                dim=feature_dim,
+                depth=args.depth,
+                heads=args.num_heads,
+                mlp_dim=2048,
+                dim_head=64,
+                device=device,
+            )
+        elif args.model_type == 'vis':
+            model = ViS(
+                num_outputs=num_outputs,
+                input_dim=feature_dim,
+                depth=args.depth,
+                nheads=args.num_heads,
+                dimensions_f=64,
+                dimensions_c=64,
+                dimensions_s=64,
+                device=device,
+            )
+        else:
+            raise ValueError('Please specify a correct model type: "vit" or "vis"')
+
+        model.load_state_dict(torch.load(model_path, map_location=device))
     else:  # Train from scratch or continue training
         if args.model_type == 'vit':
             model = ViT(
@@ -235,16 +263,110 @@ if __name__ == '__main__':
             save_dir=save_dir,
         )
 
-    preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff="")
+    if args.eval:
 
-    test_results_splits = {
-        "real": real,
-        "preds": preds,
-        "random": None,  # Add random predictions if required
-        "wsi_file_name": wsis,
-        "tcga_project": projs,
-        "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
-    }
+        # Ensure 'progressor_status' column exists
+        if 'progressor_status' not in df.columns:
+            raise ValueError("The 'progressor_status' column is missing in the reference file.")
 
-    with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
-        pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+        # Evaluate on train, val, test datasets
+        train_preds, train_real, train_wsis, train_projs = evaluate(model, train_dataloader, run=run, suff="train")
+        val_preds, val_real, val_wsis, val_projs = evaluate(model, val_dataloader, run=run, suff="val")
+        test_preds, test_real, test_wsis, test_projs = evaluate(model, test_dataloader, run=run, suff="test")
+
+        # Prepare data for classification
+        # Create mappings from wsi_file_name to progressor_status for each split
+        progressor_status_map_train = dict(zip(train_df['wsi_file_name'], train_df['progressor_status']))
+        progressor_status_map_val = dict(zip(val_df['wsi_file_name'], val_df['progressor_status']))
+        progressor_status_map_test = dict(zip(test_df['wsi_file_name'], test_df['progressor_status']))
+
+        # Function to prepare data for classification
+        def prepare_classification_data(preds, wsis, progressor_status_map):
+            X = preds
+            y = np.array([1 if progressor_status_map[wsi] == 'P' else 0 for wsi in wsis])
+            return X, y
+
+        # Prepare data
+        X_train, y_train = prepare_classification_data(train_preds, train_wsis, progressor_status_map_train)
+        X_val, y_val = prepare_classification_data(val_preds, val_wsis, progressor_status_map_val)
+        X_test, y_test = prepare_classification_data(test_preds, test_wsis, progressor_status_map_test)
+
+        # Train classifier on train data
+        from sklearn.ensemble import RandomForestClassifier
+        classifier = RandomForestClassifier(random_state=42)
+        classifier.fit(X_train, y_train)
+
+        # Function to evaluate classifier and log metrics
+        def evaluate_classifier(X, y, split_name):
+            y_pred = classifier.predict(X)
+            y_prob = classifier.predict_proba(X)[:, 1]
+            accuracy = accuracy_score(y, y_pred)
+            recall = recall_score(y, y_pred)
+            auc = roc_auc_score(y, y_prob)
+            if run:
+                run.log({
+                    f"{split_name} PP Accuracy": accuracy,
+                    f"{split_name} PP Recall": recall,
+                    f"{split_name} PP AUC": auc
+                })
+            print(f"{split_name} Accuracy: {accuracy}")
+            print(f"{split_name} Recall: {recall}")
+            print(f"{split_name} AUC: {auc}")
+
+        # Evaluate on train, val, test
+        evaluate_classifier(X_train, y_train, "Train")
+        evaluate_classifier(X_val, y_val, "Validation")
+        evaluate_classifier(X_test, y_test, "Test")
+
+        # Save results
+        train_results_splits = {
+            "real": train_real,
+            "preds": train_preds,
+            "random": None,  # Add random predictions if required
+            "wsi_file_name": train_wsis,
+            "tcga_project": train_projs,
+            "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+        }
+
+        val_results_splits = {
+            "real": val_real,
+            "preds": val_preds,
+            "random": None,  # Add random predictions if required
+            "wsi_file_name": val_wsis,
+            "tcga_project": val_projs,
+            "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+        }
+
+        test_results_splits = {
+            "real": test_real,
+            "preds": test_preds,
+            "random": None,  # Add random predictions if required
+            "wsi_file_name": test_wsis,
+            "tcga_project": test_projs,
+            "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+        }
+
+        with open(os.path.join(save_dir, 'train_results.pkl'), 'wb') as f:
+            pickle.dump(train_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        with open(os.path.join(save_dir, 'val_results.pkl'), 'wb') as f:
+            pickle.dump(val_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
+            pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    else:    
+
+        preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff="")
+
+        test_results_splits = {
+            "real": real,
+            "preds": preds,
+            "random": None,  # Add random predictions if required
+            "wsi_file_name": wsis,
+            "tcga_project": projs,
+            "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+        }
+
+        with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
+            pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)

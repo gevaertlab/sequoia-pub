@@ -24,7 +24,7 @@ os.makedirs("slurm/error", exist_ok=True)
 for i in range(10):
     exp_name = f"run_train_split_{i}"
     split_column = f"split_{i}"
-    job_name = f"Sequoia{i}"  # Dynamic job name
+    job_name = f"SequEval{i}"  # Dynamic job name
     
     job_script = f"slurm_scripts/run_job_{i}.sh"
     with open(job_script, "w") as f:
@@ -37,7 +37,6 @@ for i in range(10):
         f.write(f"    --cohort TCGA \\\n")
         f.write(f"    --exp_name {exp_name} \\\n")
         f.write(f"    --batch_size 16 \\\n")
-        f.write(f"    --train \\\n")
         f.write(f"    --log histo_to_cnv \\\n")
         f.write(f"    --save_on loss+corr \\\n")
         f.write(f"    --stop_on loss+corr \\\n")
@@ -45,6 +44,7 @@ for i in range(10):
         f.write(f"    --filter_no_features 0 \\\n")
         f.write(f"    --feature_path /scratchc/fmlab/zuberi01/masters/saved_patches/40x_400/features2 \\\n")
         f.write(f"    --rna_prefix cnv_ \\\n")
+        f.write(f"    --checkpoint /scratchc/fmlab/zuberi01/phd/sequoia-pub/scripts/output/TCGA/run_train_split_{i}/model_best.pt \\\n")
         f.write(f"    --eval \n")
 
     

@@ -7,7 +7,7 @@
 #SBATCH --mail-user=rehan.zuberi@cruk.cam.ac.uk
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH -p cuda
-#SBATCH --gres=gpu:0
+#SBATCH --gres=gpu:1
 #SBATCH -o slurm/out/%J.out
 #SBATCH -e slurm/error/%J.error
 
@@ -26,4 +26,5 @@ CUDA_VISIBLE_DEVICES=0 python3 /scratchc/fmlab/zuberi01/phd/sequoia-pub/src/main
     --split_column split_0 \
     --filter_no_features 0 \
     --feature_path /scratchc/fmlab/zuberi01/masters/saved_patches/40x_400/features2 \
-    --rna_prefix cnv_ 
+    --rna_prefix cnv_ \
+    --eval 
