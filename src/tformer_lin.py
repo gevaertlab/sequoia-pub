@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 from einops import rearrange
+from huggingface_hub import PyTorchModelHubMixin
 
 
 class SummaryMixing(nn.Module):
@@ -76,7 +77,7 @@ class SummaryTransformer(nn.Module):
         return x
 
 
-class ViS(nn.Module):
+class ViS(nn.Module, PyTorchModelHubMixin):
     def __init__(self, num_outputs, input_dim, depth, nheads, 
                         dimensions_f, dimensions_s, dimensions_c, 
                         num_clusters=100, device='cuda:0'):
