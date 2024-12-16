@@ -14,7 +14,7 @@ _Cancer is a heterogeneous disease requiring costly genetic profiling for better
   <img src="https://github.com/gevaertlab/sequoia-pub/blob/master/images/overview_new.png"/>
 </p>
 
-## Fold structure
+## Folder structure
 
 - `scripts`: example bash (driver) scripts to run the pre-processing, training and evaluation.
 - `examples`: example input files.
@@ -71,11 +71,30 @@ An example script to run the patch extraction: `scripts/extract_kmean_features.s
 
 Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 
-## Pre-training and fine-tunning
+## Pre-training, fine-tunning and loading pre-trained weights
 
 ### Step 4 (Optional): pretrain models on the GTEx data
 
 To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
+
+### Step 6 (Optional): load published model checkpoint
+
+Our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). We release the weights for each cancer type, from each of the five folds. Patients that were present in the test set in each fold can be found in `src/folds`. To load the SEQUOIA model weights (UNI features and linearized transformer aggregation), use:
+
+Make sure to login to HuggingFace (See [HuggingFace docs](https://huggingface.co/docs/huggingface_hub/en/quick-start#login-command) for more information):
+```
+from huggingface_hub import login
+login()
+```
+
+Then:
+```
+from src.tformer_lin import ViS
+
+cancer = 'brca'
+i = 0 ## fold number
+model = ViS.from_pretrained(f"gevaertlab/sequoia-{cancer}-{i}")
+```
 
 ### Step 5: Train or fine-tune SEQUOIA on the TCGA data
 
@@ -91,7 +110,7 @@ Some points that we want to emphasize:
 
 For running the benchmarked variations of the architecture:
 - MLP aggregation: for this part we made use of the implementation from HE2RNA, which can be found in `he2rna.py`. An example run script is provided in `scripts/run_he2rna.sh`
-- transformer aggregation: this model type is implemented in the `main.py`. use ```--model_type``` 'vis'.
+- transformer aggregation: this model type is implemented in the `main.py`. use ```--model_type``` 'vit'.
 
 
 ## Evaluation
