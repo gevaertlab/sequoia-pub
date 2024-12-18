@@ -19,7 +19,7 @@ _Cancer is a heterogeneous disease requiring costly genetic profiling for better
 - `scripts`: example bash (driver) scripts to run the pre-processing, training and evaluation.
 - `examples`: example input files.
 - `pre-processing`: pre-processing scripts.
-- `evaluation`: evaluation scripts.
+- `evaluation`: evaluation scripts and output gene list ordered by index. 
 - `spatial_vis`: scripts for generating spatial predictions of gene expression values. 
 - `src`: main files for models and training.
 
@@ -95,6 +95,7 @@ cancer = 'brca'
 i = 0 ## fold number
 model = ViS.from_pretrained(f"gevaertlab/sequoia-{cancer}-{i}")
 ```
+The gene names corresponding to the output can be found in the `evaluation/gene_list.csv` file. 
 
 ### Step 6: Train or fine-tune SEQUOIA on the TCGA data
 
