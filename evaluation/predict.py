@@ -2,21 +2,19 @@
 
 import os
 import argparse
-import pdb
 from tqdm import tqdm
 import pickle
-from he2rna import HE2RNA, he2rna_predict
+# from he2rna import HE2RNA, he2rna_predict
+# from vit import ViT
 import h5py
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from sklearn import preprocessing
-import wandb
 from accelerate import Accelerator
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
 import torch.nn as nn
 
 from read_data import SuperTileRNADataset
 from utils import patient_kfold, filter_no_features, custom_collate_fn
-from vit import train, ViT, evaluate
 from tformer_lin import ViS
 
 def custom_collate_fn(batch):
