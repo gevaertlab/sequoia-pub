@@ -84,9 +84,8 @@ def extract_patches(slide_path, mask_path, patch_size, patches_output_dir, slide
 
         # handle slides with 40 magnification at base level
         resize_factor = float(slide.properties.get('aperio.AppMag', 20)) / 20.0
-        if not slide.properties.get('aperio.AppMag', 20): print(f"magnifications for {slide_id} is not found, using default magnificantion 20X")
+        if not slide.properties.get('aperio.AppMag', 20): print(f"magnifications for {slide_id} is not found, using default magnification 20X")
 
-        resize_factor = resize_factor * args.dezoom_factor
         patch_size_resized = (int(resize_factor * patch_size[0]), int(resize_factor * patch_size[1]))
         print(f"patch size for {slide_id}: {patch_size_resized}")
 
@@ -162,8 +161,6 @@ parser.add_argument('--start', type=int, default=0,
 parser.add_argument('--end', type=int, default=None,
                     help='End slide index for parallelization')
 parser.add_argument('--max_patches_per_slide', default=None, type=int)
-parser.add_argument('--dezoom_factor', default=1.0, type=float,
-                    help='dezoom  factor, 1.0 means the images are taken at 20x magnification, 2.0 means the images are taken at 40x magnification')
 parser.add_argument('--debug', default=0, type=int,
                     help='whether to use debug mode')
 parser.add_argument('--parallel', default=1, type=int,
