@@ -15,7 +15,7 @@ import torch.nn as nn
 
 from read_data import SuperTileRNADataset
 from utils import patient_kfold, filter_no_features, custom_collate_fn
-from tformer_lin import ViS
+from src.tformer_lin import ViS
 
 def custom_collate_fn(batch):
     """Remove bad entries from the dataloader
@@ -36,7 +36,6 @@ if __name__ == '__main__':
     parser.add_argument('--folds', type=int, default=5, help='Folds for pre-trained model')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
-    parser.add_argument('--model', type=str, default='vis', help='model type, must be in one of mlp, vit or vis')
     parser.add_argument('--depth', type=int, default=6, help='transformer depth')
     parser.add_argument('--num-heads', type=int, default=16, help='number of attention heads')
     parser.add_argument('--num_clusters', type=int, default=100, help='Number of clusters for the kmeans')
@@ -59,8 +58,6 @@ if __name__ == '__main__':
 
     run = None
     #run = wandb.init(project="visgene", entity='mpizuric', config=args, name=args.exp_name) 
-
-    assert args.model in ['mlp', 'vit', 'vis']
     device = torch.device("cuda:0" if (torch.cuda.is_available()) else "cpu")
     print(device)
 
@@ -101,33 +98,6 @@ if __name__ == '__main__':
             else:
                 pretrained_model = os.path.join(args.checkpoint, f'model_{fold}.pt')
 
-        if args.model == "mlp":
-            model = HE2RNA(input_dim=feature_dim, layers=[256,256],
-            ks=[1,2,5,10,20,50,100],
-            output_dim=test_dataset.num_genes, device=device)
-            model.load_state_dict(torch.load(pretrained_model, map_location="cpu").state_dict())
-            preds, labels, wsis, projs = he2rna_predict(model, test_dataloader)
-
-            random_model = HE2RNA(input_dim=feature_dim, layers=[256,256],
-                    ks=[1,2,5,10,20,50,100],
-                    output_dim=test_dataset.num_genes, 
-                    device=device)
-            random_preds, _, _, _ = he2rna_predict(random_model, test_dataloader)
-
-        elif args.model == "vit":
-            model = ViT(num_outputs=test_dataset.num_genes, 
-                        dim=feature_dim, depth=args.depth, heads=args.num_heads, 
-                        mlp_dim=2048, dim_head = 64) 
-            model.load_state_dict(torch.load(pretrained_model, map_location="cpu"))
-            model.to(device)
-            preds, wsis, projs = predict(model, test_dataloader, run=run)
-            random_model = ViT(num_outputs=test_dataset.num_genes, 
-                                dim=feature_dim, depth=args.depth, heads=args.num_heads, 
-                                mlp_dim=2048, dim_head = 64)  
-            random_model.to(device)
-            random_preds, _, _ = predict(random_model, test_dataloader, run=run)
-
-        elif args.model == 'vis':
             model = ViS(num_outputs=test_dataset.num_genes, 
                         input_dim=feature_dim, 
                         depth=args.depth, nheads=args.num_heads,  
