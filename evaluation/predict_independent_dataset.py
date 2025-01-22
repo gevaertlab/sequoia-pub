@@ -8,7 +8,6 @@ import torch.nn as nn
 from src.read_data import SuperTileRNADataset
 from src.utils import filter_no_features, custom_collate_fn
 from src.vit import ViT, train, evaluate, predict
-from src.vit import ViT
 from src.tformer_lin import ViS
 
 
