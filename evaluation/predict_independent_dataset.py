@@ -14,7 +14,7 @@ from src.tformer_lin import ViS
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
     parser.add_argument('--ref_file', type=str, required=True, help='Reference file')
-    parser.add_argument('--feature_path', type=str, default="", help='Output directory to save features')
+    parser.add_argument('--feature_path', type=str, default="", help='Directory where pre-processed WSI features are stored')
     parser.add_argument('--feature_use', type=str, default="cluster_mean_features", help='which feature to use for training the model')
     parser.add_argument('--folds', type=int, default=5, help='Folds for pre-trained model')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
