@@ -14,16 +14,16 @@ from src.tformer_lin import ViS
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Getting features')
     parser.add_argument('--ref_file', type=str, required=True, help='Reference file')
-    parser.add_argument('--feature_path', type=str, default="", help='Directory where pre-processed WSI features are stored')
-    parser.add_argument('--feature_use', type=str, default="cluster_mean_features", help='which feature to use for training the model')
+    parser.add_argument('--feature_path', type=str, default='', help='Directory where pre-processed WSI features are stored')
+    parser.add_argument('--feature_use', type=str, default='cluster_mean_features', help='Which feature to use for training the model')
     parser.add_argument('--folds', type=int, default=5, help='Folds for pre-trained model')
     parser.add_argument('--seed', type=int, default=99, help='Seed for random generation')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
-    parser.add_argument('--depth', type=int, default=6, help='transformer depth')
-    parser.add_argument('--num-heads', type=int, default=16, help='number of attention heads')
-    parser.add_argument('--tcga_project', default=None, type=str, default='', help="the tcga_project we want to use")
-    parser.add_argument('--save_dir', type=str, default="", help='save_path')
-    parser.add_argument('--exp_name', type=str, default="exp", help='Experiment name')
+    parser.add_argument('--depth', type=int, default=6, help='Transformer depth')
+    parser.add_argument('--num-heads', type=int, default=16, help='Number of attention heads')
+    parser.add_argument('--tcga_project', default=None, type=str, default='', help='The tcga_project we want to use')
+    parser.add_argument('--save_dir', type=str, default='', help='Where to save results')
+    parser.add_argument('--exp_name', type=str, default='exp', help='Experiment name')
 
     ############################################## variables ##############################################
     
