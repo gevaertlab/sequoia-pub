@@ -71,23 +71,30 @@ An example script to run the patch extraction: `scripts/extract_kmean_features.s
 
 Expected run time: depend on the hardware (CPU/GPU) and the number of slides
 
-## Pre-training, fine-tunning and loading pre-trained weights
+## Running evaluation of our pre-trained model on an independent dataset
 
-### Step 4 (Optional): pretrain models on the GTEx data
+After WSI pre-processing, our pre-trained SEQUOIA model (UNI features and linearized transformer aggregation) can be evaluated on the WSIs of an independent dataset by running ``evaluation/predict_independent_dataset.py``. 
 
-To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
+We released the weights for each cancer type, from each of the five folds on [HuggingFace](https://huggingface.co/gevaertlab), so make sure to login (See [HuggingFace docs](https://huggingface.co/docs/huggingface_hub/en/quick-start#login-command) for more information):
 
-### Step 5 (Optional): load published model checkpoint
-
-Our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). We release the weights for each cancer type, from each of the five folds. Patients that were present in the test set in each fold can be found in `src/folds`. To load the SEQUOIA model weights (UNI features and linearized transformer aggregation), use:
-
-Make sure to login to HuggingFace (See [HuggingFace docs](https://huggingface.co/docs/huggingface_hub/en/quick-start#login-command) for more information):
 ```
 from huggingface_hub import login
 login()
 ```
 
-Then:
+The gene names corresponding to the output can be found in the `evaluation/gene_list.csv` file. 
+
+## Pre-training, fine-tunning and loading pre-trained weights
+
+### Step 1 (Optional): pretrain models on the GTEx data
+
+To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
+
+### Step 2 (Optional): load published model checkpoint
+
+As mentioned above, our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). Patients that were present in the test set in each fold can be found in `src/folds`. Make sure to login to HuggingFace (see above).
+
+Then use:
 ```
 from src.tformer_lin import ViS
 
@@ -97,7 +104,7 @@ model = ViS.from_pretrained(f"gevaertlab/sequoia-{cancer}-{i}")
 ```
 The gene names corresponding to the output can be found in the `evaluation/gene_list.csv` file. 
 
-### Step 6: Train or fine-tune SEQUOIA on the TCGA data
+### Step 3: Train or fine-tune SEQUOIA on the TCGA data
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
