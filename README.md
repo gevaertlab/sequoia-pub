@@ -86,9 +86,42 @@ The gene names corresponding to the output can be found in the `evaluation/gene_
 
 ## Pre-training, fine-tunning and loading pre-trained weights
 
-### Step 1 (Optional): pretrain models on the GTEx data
+### Step 0 (Optional): pretrain models on the GTEx data
 
 To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
+
+### Step 1 (Optional): load the same train/validation/test splits that we used
+
+The TCGA splits for each fold are available in the `patient_splits.zip` file in the [pre_processing](https://github.com/gevaertlab/sequoia-pub/blob/master/pre_processing/patient_splits.zip) folder. 
+
+To load the splits from the numpy file, unzip the `patient_splits.zip` folder. To use:
+
+```
+split = np.load(f'TCGA-{cancer}.npy'), allow_pickle=True).item()
+for i in range(5):
+  train_patients = split[f'fold_{i}']['train']
+  val_patients = split[f'fold_{i}']['val']
+  test_patients = split[f'fold_{i}']['test']
+```
+
+Note that these contain only the patient ID, not the entire WSI filename. The WSI file names within each test fold are available in `test_wsis.pkl` in the same [pre_processing](https://github.com/gevaertlab/sequoia-pub/blob/master/pre_processing/) folder. To use:
+
+```
+with open('test_wsis.pkl','rb') as f:
+  data = pickle.load(f)
+test_wsis = data[f'{cancer}']['split_{i}']
+```
+
+Concatenating all the WSIs from a particular cancer type across all the folds results in all the WSI IDs that were used for that cancer type. So to find the exact WSI filenames used in the train/validation split from fold 0, match the patient IDs from `train_patients` and `val_patients` above to the WSI IDs across folds 1-4 in `test_wsis.pkl`:
+
+```
+train_patients = split['fold_0']['train']
+val_patients = split['fold_0']['val']
+wsis = np.concatenate([data['brca'][f'split_{i}']['wsi_file_name'] for i in range(1,5)])
+train_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in train_patients]
+val_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in val_patients]
+
+```
 
 ### Step 2 (Optional): load published model checkpoint
 
