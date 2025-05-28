@@ -86,11 +86,11 @@ The gene names corresponding to the output can be found in the `evaluation/gene_
 
 ## Pre-training, fine-tunning and loading pre-trained weights
 
-### Step 0 (Optional): pretrain models on the GTEx data
+### Step 1 (Optional): pretrain models on the GTEx data
 
 To pretrain the weights of the model on normal tissues, please use the script `pretrain_gtex.py`. The process requires an input  *reference.csv* file, indicating the gene expression values for each WSI. See `examples/ref_file.csv` for an example. 
 
-### Step 1 (Optional): load the same train/validation/test splits that we used
+### Step 2 (Optional): load the same train/validation/test splits that we used
 
 The TCGA splits for each fold are available in the `patient_splits.zip` file in the [pre_processing](https://github.com/gevaertlab/sequoia-pub/blob/master/pre_processing/patient_splits.zip) folder. 
 
@@ -123,7 +123,7 @@ val_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in val_patients]
 
 ```
 
-### Step 2 (Optional): load published model checkpoint
+### Step 3 (Optional): load published model checkpoint
 
 As mentioned above, our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). Patients that were present in the test set in each fold can be found in `src/folds`. Make sure to login to HuggingFace (see above).
 
@@ -137,7 +137,7 @@ model = ViS.from_pretrained(f"gevaertlab/sequoia-{cancer}-{i}")
 ```
 The gene names corresponding to the output can be found in the `evaluation/gene_list.csv` file. 
 
-### Step 3: Train or fine-tune SEQUOIA on the TCGA data
+### Step 4: Train or fine-tune SEQUOIA on the TCGA data
 
 Now we can train the model from scratch or fine-tune it on the TCGA data. Here is an example bash script to run the process: `scripts/run_train.sh`
 
