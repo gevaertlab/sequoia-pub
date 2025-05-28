@@ -125,7 +125,7 @@ val_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in val_patients]
 
 ### Step 3 (Optional): load published model checkpoint
 
-As mentioned above, our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). Patients that were present in the test set in each fold can be found in `src/folds`. Make sure to login to HuggingFace (see above).
+As mentioned above, our pre-trained checkpoint weights for SEQUOIA are available on [HuggingFace](https://huggingface.co/gevaertlab). Patients that were present in the test set in each fold can be found in the [pre_processing](https://github.com/gevaertlab/sequoia-pub/blob/master/pre_processing/) as explained in Step 2 above. Make sure to login to HuggingFace (see above).
 
 Then use:
 ```
