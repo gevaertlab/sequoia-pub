@@ -31,13 +31,15 @@ from sklearn.model_selection import train_test_split
 #from accelerate import Accelerator
 from einops import rearrange
 import pickle
+import h5py
+
+from huggingface_hub import PyTorchModelHubMixin
 
 from src.read_data import SuperTileRNADataset
 from src.utils import patient_split, patient_kfold, custom_collate_fn, filter_no_features
 
-import h5py
 
-class HE2RNA(nn.Module):
+class HE2RNA(nn.Module, PyTorchModelHubMixin):
     """Model that generates one score per tile and per predicted gene.
     Args
         output_dim (int): Output dimension, must match the number of genes to
