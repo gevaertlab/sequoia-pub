@@ -43,7 +43,13 @@ Expected installation time in normal Linux environment: 15 mins
 
 ## Pre-processing
 
-Scripts for pre-processing are located in the `pre-processing` folder. All computational processes requires a *reference.csv* file, which has one row per WSI and their corresponding gene expression values. The RNA columns are named with the following format 'rna_{GENENAME}'. An optional 'tcga_project' column indicates the TCGA project that data belongs to. See `examples/ref_file.csv` for an example. 
+Scripts for pre-processing are located in the `pre-processing` folder. 
+
+## Construct reference file
+All computational processes requires a *reference.csv* file, which has one row per WSI and their corresponding gene expression values. The RNA columns are named with the following format 'rna_{GENENAME}'. An optional 'tcga_project' column indicates the TCGA project that data belongs to. See `examples/ref_file.csv` for an example. A complete list of genes (columns) used for the model developed and evaluation in our paper can be found in `examples/gene_list.csv`. 
+
+For inference using pre-training model weights, simply set all gene expression value in the table to 0. 
+For model training, we need to replace 0 with real gene expression data. 
 
 ### Step 1: Patch extraction
 
