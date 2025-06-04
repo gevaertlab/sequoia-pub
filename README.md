@@ -123,10 +123,9 @@ Concatenating all the WSIs from a particular cancer type across all the folds re
 ```
 train_patients = split['fold_0']['train']
 val_patients = split['fold_0']['val']
-wsis = np.concatenate([data['brca'][f'split_{i}']['wsi_file_name'] for i in range(1,5)])
+wsis = np.concatenate([data['brca'][f'split_{i}'] for i in range(1,5)])
 train_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in train_patients]
 val_wsis = [i for i in wsis if '-'.join(i.split('-')[:3]) in val_patients]
-
 ```
 
 ### Step 3 (Optional): load published model checkpoint
