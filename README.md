@@ -90,7 +90,7 @@ login()
 
 The gene names corresponding to the output can be found in the `evaluation/gene_list.csv` file. 
 
-## Pre-training, fine-tunning and loading pre-trained weights
+## Pre-training, fine-tuning and loading pre-trained weights
 
 ### Step 1 (Optional): pretrain models on the GTEx data
 
